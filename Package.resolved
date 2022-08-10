@@ -19,6 +19,15 @@
       }
     },
     {
+      "identity" : "mocker",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/WeTransfer/Mocker.git",
+      "state" : {
+        "revision" : "e7165fb0378193c6784f1d46a9ab2b6184c384fa",
+        "version" : "2.7.0"
+      }
+    },
+    {
       "identity" : "swift-log",
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/apple/swift-log.git",

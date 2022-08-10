@@ -19,6 +19,7 @@ let package = Package(
     dependencies: [
         .package(url: "https://github.com/kean/Get.git", from: "1.0.0"),
         .package(url: "https://github.com/CreateAPI/URLQueryEncoder.git", from: "0.2.0"),
+        .package(url: "https://github.com/WeTransfer/Mocker.git", from: "2.3.0"),
         .package(url: "https://github.com/vapor/console-kit.git", from: "4.4.1"),
     ],
     targets: [
@@ -38,6 +39,13 @@ let package = Package(
             ],
             exclude: [
                 "OpenAPI/app_store_connect_api_2.0_openapi.json"
+            ]
+        ),
+        .testTarget(
+            name: "ShuttleTests",
+            dependencies: [
+                "Shuttle",
+                "Mocker",
             ]
         ),
     ]
