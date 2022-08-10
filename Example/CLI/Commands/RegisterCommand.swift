@@ -50,7 +50,7 @@ struct RegisterCommand: AsyncCommand {
             keyId: keyId,
             key: key
         )
-        AppStoreConnect.client = APIClient(provider: provider)
+        AppStoreConnect.client = APIClient(token: provider)
         
         let device = try await AppStoreConnect
             .v1

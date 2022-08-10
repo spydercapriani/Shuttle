@@ -58,7 +58,7 @@ struct EnrollCommand: AsyncCommand {
             keyId: keyId,
             key: key
         )
-        AppStoreConnect.client = APIClient(provider: provider)
+        AppStoreConnect.client = APIClient(token: provider)
         
         let allProfiles = try await AppStoreConnect
             .v1

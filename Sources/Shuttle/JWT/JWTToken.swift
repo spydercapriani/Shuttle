@@ -5,7 +5,7 @@
 
 import Foundation
 
-protocol JWTToken {
+public protocol JWTToken {
     
     var token: Token { get throws }
 }

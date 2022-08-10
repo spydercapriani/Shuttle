@@ -7,20 +7,34 @@ import Foundation
 import Get
 
 public extension AppStoreConnect {
+    /// Default API Client to be used for all App Store Connect API requests.
     static var client: APIClient!
 }
 
 public extension APIClient {
     
     convenience init(
-        provider: AppleJWT
+        baseURL: URL?,
+        sessionConfiguration: URLSessionConfiguration = .default,
+        provider: JWTToken
     ) {
         self.init(
             configuration: .init(
-                baseURL: URL(string: "https://api.appstoreconnect.apple.com"),
+                baseURL: baseURL,
+                sessionConfiguration: sessionConfiguration,
                 delegate: JWTRequestsAuthenticator(provider)
             )
         )
+    }
+    
+    convenience init(
+        token: AppleJWT
+    ) {
+        self.init(
+            baseURL: URL(string: "https://api.appstoreconnect.apple.com"),
+            provider: token
+        )
+        
         let formatter = DateFormatter()
         formatter.locale = Locale(identifier: "en_US_POSIX")
         formatter.timeZone = TimeZone(secondsFromGMT: 0)
