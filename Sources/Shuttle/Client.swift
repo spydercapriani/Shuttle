@@ -39,7 +39,7 @@ public extension APIClient {
         formatter.locale = Locale(identifier: "en_US_POSIX")
         formatter.timeZone = TimeZone(secondsFromGMT: 0)
         formatter.calendar = Calendar(identifier: .iso8601)
-        
+        self.configuration.encoder.dateEncodingStrategy = .iso8601
         self.configuration.decoder.dateDecodingStrategy = .custom { (decoder) -> Date in
             let container = try decoder.singleValueContainer()
             let dateStr = try container.decode(String.self)
@@ -62,39 +62,60 @@ public extension APIClient {
     }
 }
 
-public extension Request where Response: Decodable {
+public extension Request {
     
-    func send(using client: APIClient) async throws -> Response {
-        try await client.send(self).value
+    func download(using client: APIClient) async throws -> Get.Response<URL> {
+        try await client.download(for: self)
     }
     
-    var response: Response {
+    var location: URL {
+        get async throws {
+            try await download(using: AppStoreConnect.client).location
+        }
+    }
+}
+
+public extension Request where Response: Decodable {
+    
+    func send(using client: APIClient) async throws -> Get.Response<Response> {
+        try await client.send(self)
+    }
+    
+    var response: Get.Response<Response> {
         get async throws {
             try await send(using: AppStoreConnect.client)
+        }
+    }
+    
+    var value: Response {
+        get async throws {
+            try await self.response.value
         }
     }
 }
 
 public extension Request where Response == Void {
     
-    func send(using client: APIClient) async throws {
+    func send(using client: APIClient) async throws -> Get.Response<Response> {
         try await client.send(self)
     }
     
-    var response: Void {
+    var response: Get.Response<Void> {
         get async throws {
             try await send(using: AppStoreConnect.client)
+        }
+    }
+    
+    var value: Void {
+        get async throws {
+            try await self.response.value
         }
     }
 }
 
 public extension Request where Response == URL {
     
-    func download(using client: APIClient) async throws -> Response {
-        try await client.download(for: self).location
-    }
-    
-    var location: URL {
+    var response: Get.Response<URL> {
         get async throws {
             try await download(using: AppStoreConnect.client)
         }

@@ -67,7 +67,7 @@ struct RegisterCommand: AsyncCommand {
                     )
                 )
             )
-            .response
+            .value
             .data
         
         context.console.success("Successfully registered \(device.attributes!.name!)")
