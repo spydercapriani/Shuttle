@@ -1,16 +1,16 @@
 //
-//  JWT.swift
+//  JWTToken.swift
 //  Shuttle
 //
 
 import Foundation
 
-public protocol JWTProvider {
+protocol JWTToken {
     
     var token: Token { get throws }
 }
 
-public struct AppleJWT: Codable, JWTProvider {
+public struct AppleJWT: Codable, JWTToken {
 
     public enum Error: Swift.Error, LocalizedError {
 
