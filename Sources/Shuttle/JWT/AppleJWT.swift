@@ -42,9 +42,6 @@ public struct AppleJWT: Codable, JWTProvider {
 
     typealias DateProvider = () -> Date
     static let defaultDateProvider: DateProvider = { Date() }
-
-    /// The JWT Header contains information specific to the App Store Connect API Keys, such as algorithm and keys.
-    private let header: Header
     
     /// The JWT Header contains information specific to the App Store Connect API Keys, such as algorithm and keys.
     private struct Header: Codable {
@@ -64,6 +61,8 @@ public struct AppleJWT: Codable, JWTProvider {
         /// The required type for signing requests to the App Store Connect API
         let tokenType: String = "JWT"
     }
+    /// The JWT Header contains information specific to the App Store Connect API Keys, such as algorithm and keys.
+    private let header: Header
 
     /// Your issuer identifier from the API Keys page in App Store Connect (Ex: 57246542-96fe-1a63-e053-0824d011072a)
     private let issuerIdentifier: String
@@ -74,7 +73,7 @@ public struct AppleJWT: Codable, JWTProvider {
     /// The token's expiration duration. Tokens that expire more than 20 minutes in the future are not valid, so set it to a max of 20 minutes.
     private let expireDuration: TimeInterval
 
-    /// Creates a new JWT Factory to create signed requests for the App Store Connect API.
+    /// Creates a new Apple JWT for creating signed requests for the App Store Connect API.
     ///
     /// - Parameters:
     ///   - keyIdentifier: Your private key ID from App Store Connect (Ex: 2X9R4HXF34)
@@ -92,6 +91,7 @@ public struct AppleJWT: Codable, JWTProvider {
         self.expireDuration = expireDuration
     }
     
+    /// Signed JWT token for App Store Connect requests.
     public var token: Token {
         get throws {
             try signedToken(using: privateKey)
