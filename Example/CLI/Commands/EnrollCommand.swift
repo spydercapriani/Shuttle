@@ -80,14 +80,14 @@ struct EnrollCommand: AsyncCommand {
                     limitDevices: nil
                 )
             )
-            .send()
+            .response
             .data
         
         let allDeviceIds = try await AppStoreConnect
             .v1
             .devices
             .get()
-            .send()
+            .response
             .data
             .map(\.id)
         
@@ -108,7 +108,7 @@ struct EnrollCommand: AsyncCommand {
                     .id(profile.id)
                     .bundleID
                     .get()
-                    .send()
+                    .response
                     .data
             }
             
@@ -119,7 +119,7 @@ struct EnrollCommand: AsyncCommand {
                     .id(profile.id)
                     .certificates
                     .get()
-                    .send()
+                    .response
                     .data
             }
             
@@ -130,7 +130,7 @@ struct EnrollCommand: AsyncCommand {
                     .id(profile.id)
                     .devices
                     .get()
-                    .send()
+                    .response
                     .data
             }
             
@@ -148,7 +148,7 @@ struct EnrollCommand: AsyncCommand {
                 .profiles
                 .id(profile.id)
                 .delete
-                .send()
+                .response
             context.console.error("Deleted \(profileName)")
             
             let newProfile = try await AppStoreConnect
@@ -189,7 +189,7 @@ struct EnrollCommand: AsyncCommand {
                         )
                     )
                 )
-                .send()
+                .response
                 .data
             
             context.console.success("Created \(newProfile.attributes!.name!)")

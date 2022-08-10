@@ -64,21 +64,39 @@ public extension APIClient {
 
 public extension Request where Response: Decodable {
     
-    func send(using client: APIClient = AppStoreConnect.client) async throws -> Response {
+    func send(using client: APIClient) async throws -> Response {
         try await client.send(self).value
+    }
+    
+    var response: Response {
+        get async throws {
+            try await send(using: AppStoreConnect.client)
+        }
     }
 }
 
 public extension Request where Response == Void {
     
-    func send(using client: APIClient = AppStoreConnect.client) async throws {
+    func send(using client: APIClient) async throws {
         try await client.send(self)
+    }
+    
+    var response: Void {
+        get async throws {
+            try await send(using: AppStoreConnect.client)
+        }
     }
 }
 
 public extension Request where Response == URL {
     
-    func download(using client: APIClient = AppStoreConnect.client) async throws -> Response {
+    func download(using client: APIClient) async throws -> Response {
         try await client.download(for: self).location
+    }
+    
+    var location: URL {
+        get async throws {
+            try await download(using: AppStoreConnect.client)
+        }
     }
 }
