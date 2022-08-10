@@ -125,10 +125,10 @@ public struct AppleJWT: Codable, JWTProvider {
         )
         let headerString = try JSONEncoder()
             .encode(header.self)
-            .base64URLEncoded()
+            .base64URLEncoded
         let payloadString = try JSONEncoder()
             .encode(payload.self)
-            .base64URLEncoded()
+            .base64URLEncoded
         return "\(headerString).\(payloadString)"
     }
 
@@ -140,9 +140,9 @@ public struct AppleJWT: Codable, JWTProvider {
     func signedToken(using privateKey: P8PrivateKey, dateProvider: DateProvider = Self.defaultDateProvider) throws -> Token {
         let digest = try self.digest(dateProvider: dateProvider)
 
-        let signature = try privateKey.toASN1()
-            .toECKeyData()
-            .toPrivateKey()
+        let signature = try privateKey.asASN1
+            .ECKeyData
+            .privateKey
             .es256Sign(digest: digest)
 
         return "\(digest).\(signature)"
@@ -150,8 +150,8 @@ public struct AppleJWT: Codable, JWTProvider {
 }
 
 internal extension Data {
-    func base64URLEncoded() -> String {
-        return base64EncodedString()
+    var base64URLEncoded: String {
+        base64EncodedString()
             .replacingOccurrences(of: "=", with: "")
             .replacingOccurrences(of: "+", with: "-")
             .replacingOccurrences(of: "/", with: "_")
@@ -159,7 +159,7 @@ internal extension Data {
 }
 
 internal extension String {
-    func base64URLDecoded() -> String {
+    var base64URLDecoded: String {
         var base64 = replacingOccurrences(of: "-", with: "+")
             .replacingOccurrences(of: "_", with: "/")
         if base64.count % 4 != 0 {
@@ -172,11 +172,9 @@ internal extension String {
 public typealias Token = String
 public extension Token {
     var isExpired: Bool {
-        do {
+        get throws {
             let decodedBearer = try JWTDecoder.decode(self)
             return decodedBearer.expiryDate.compare(Date()) != ComparisonResult.orderedDescending
-        } catch {
-            return true
         }
     }
 }
@@ -185,10 +183,12 @@ public typealias P8PrivateKey = String
 private extension P8PrivateKey {
 
     /// Converts the PEM formatted .p8 private key to a DER-encoded ASN.1 data object.
-    func toASN1() throws -> ASN1 {
-        guard let asn1 = Data(base64Encoded: self) else {
-            throw AppleJWT.Error.invalidP8PrivateKey
+    var asASN1: ASN1 {
+        get throws {
+            guard let asn1 = Data(base64Encoded: self) else {
+                throw AppleJWT.Error.invalidP8PrivateKey
+            }
+            return asn1
         }
-        return asn1
     }
 }

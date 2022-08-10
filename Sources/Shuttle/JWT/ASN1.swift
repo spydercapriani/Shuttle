@@ -16,24 +16,27 @@ private indirect enum ASN1Element {
 }
 
 extension ASN1 {
-    public func toECKeyData() throws -> ECKeyData {
-        let (result, _) = toASN1Element()
+    
+    var ECKeyData: ECKeyData {
+        get throws {
+            let (result, _) = self.toASN1Element()
 
-        guard case let ASN1Element.seq(elements: es) = result,
-            case let ASN1Element.bytes(data: privateOctest) = es[2] else {
-                throw AppleJWT.Error.invalidASN1
+            guard case let ASN1Element.seq(elements: es) = result,
+                case let ASN1Element.bytes(data: privateOctest) = es[2] else {
+                    throw AppleJWT.Error.invalidASN1
+            }
+
+            let (octest, _) = privateOctest.toASN1Element()
+            guard case let ASN1Element.seq(elements: seq) = octest,
+                case let ASN1Element.bytes(data: privateKeyData) = seq[1],
+                case let ASN1Element.constructed(tag: _, elem: publicElement) = seq[3],
+                case let ASN1Element.bytes(data: publicKeyData) = publicElement else {
+                    throw AppleJWT.Error.invalidASN1
+            }
+
+            let keyData = (publicKeyData.drop(while: { $0 == 0x00}) + privateKeyData)
+            return keyData
         }
-
-        let (octest, _) = privateOctest.toASN1Element()
-        guard case let ASN1Element.seq(elements: seq) = octest,
-            case let ASN1Element.bytes(data: privateKeyData) = seq[1],
-            case let ASN1Element.constructed(tag: _, elem: publicElement) = seq[3],
-            case let ASN1Element.bytes(data: publicKeyData) = publicElement else {
-                throw AppleJWT.Error.invalidASN1
-        }
-
-        let keyData = (publicKeyData.drop(while: { $0 == 0x00}) + privateKeyData)
-        return keyData
     }
 
     // SecKeyCreateSignature seems to sometimes return a leading zero; strip it out
@@ -45,17 +48,19 @@ extension ASN1 {
     }
 
     /// Convert an ASN.1 format EC signature returned by commoncrypto into a raw 64bit signature
-    public func toRawSignature() throws -> Data {
-        let (result, _) = self.toASN1Element()
+    public var rawSignature: Data {
+        get throws {
+            let (result, _) = self.toASN1Element()
 
-        guard case let ASN1Element.seq(elements: es) = result,
-            case let ASN1Element.bytes(data: sigR) = es[0],
-            case let ASN1Element.bytes(data: sigS) = es[1] else {
-                throw AppleJWT.Error.invalidASN1
+            guard case let ASN1Element.seq(elements: es) = result,
+                case let ASN1Element.bytes(data: sigR) = es[0],
+                case let ASN1Element.bytes(data: sigS) = es[1] else {
+                    throw AppleJWT.Error.invalidASN1
+            }
+
+            let rawSig = sigR.dropLeadingBytes() + sigS.dropLeadingBytes()
+            return rawSig
         }
-
-        let rawSig = sigR.dropLeadingBytes() + sigS.dropLeadingBytes()
-        return rawSig
     }
 
     private func readLength() -> (Int, Int) {

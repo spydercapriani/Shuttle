@@ -39,7 +39,8 @@ public extension ECPrivateKey {
             throw AppleJWT.Error.privateKeyConversionFailed
         }
         
-        let rawSignature = try (signature as ASN1).toRawSignature()
-        return rawSignature.base64URLEncoded()
+        return try (signature as ASN1)
+            .rawSignature
+            .base64URLEncoded
     }
 }
