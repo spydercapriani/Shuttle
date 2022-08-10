@@ -13,7 +13,7 @@ public extension AppStoreConnect {
 public extension APIClient {
     
     convenience init(
-        provider: JWTProvider
+        provider: AppleJWT
     ) {
         self.init(
             configuration: .init(

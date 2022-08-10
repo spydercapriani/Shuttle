@@ -13,7 +13,7 @@ public extension ECPrivateKey {
         guard
             let message = digest.data(using: .utf8)
         else {
-            throw JWT.Error.ES256SigningFailed
+            throw AppleJWT.Error.ES256SigningFailed
         }
         
         var hash = [UInt8](repeating: 0, count: Int(CC_SHA256_DIGEST_LENGTH))
@@ -24,7 +24,7 @@ public extension ECPrivateKey {
         guard
             SecKeyIsAlgorithmSupported(self, .sign, algorithm)
         else {
-            throw JWT.Error.ES256SigningFailed
+            throw AppleJWT.Error.ES256SigningFailed
         }
         
         var error: Unmanaged<CFError>?
@@ -36,7 +36,7 @@ public extension ECPrivateKey {
                 &error
             )
         else {
-            throw JWT.Error.privateKeyConversionFailed
+            throw AppleJWT.Error.privateKeyConversionFailed
         }
         
         let rawSignature = try (signature as ASN1).toRawSignature()

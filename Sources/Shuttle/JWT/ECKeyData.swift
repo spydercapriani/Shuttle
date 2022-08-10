@@ -21,7 +21,7 @@ public extension ECKeyData {
                 ] as CFDictionary,
                 &error)
         else {
-            throw JWT.Error.privateKeyConversionFailed
+            throw AppleJWT.Error.privateKeyConversionFailed
         }
         return privateKey
     }
@@ -40,7 +40,7 @@ public extension ECKeyData {
                 &error
             )
         else {
-            throw JWT.Error.privateKeyConversionFailed
+            throw AppleJWT.Error.privateKeyConversionFailed
         }
         return publicKey
     }

@@ -10,7 +10,7 @@ public protocol JWTProvider {
     var token: Token { get throws }
 }
 
-public struct JWT: Codable, JWTProvider {
+public struct AppleJWT: Codable, JWTProvider {
 
     public enum Error: Swift.Error, LocalizedError {
 
@@ -187,7 +187,7 @@ private extension P8PrivateKey {
     /// Converts the PEM formatted .p8 private key to a DER-encoded ASN.1 data object.
     func toASN1() throws -> ASN1 {
         guard let asn1 = Data(base64Encoded: self) else {
-            throw JWT.Error.invalidP8PrivateKey
+            throw AppleJWT.Error.invalidP8PrivateKey
         }
         return asn1
     }

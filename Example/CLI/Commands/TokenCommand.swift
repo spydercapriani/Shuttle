@@ -30,7 +30,7 @@ struct TokenCommand: AsyncCommand {
         let file = URL(fileURLWithPath: key)
         let privateKey = try privateKey(from: file)
 
-        let token = try JWT(
+        let token = try AppleJWT(
             keyIdentifier: keyId,
             issuerIdentifier: issuerId,
             privateKey: privateKey
@@ -49,9 +49,9 @@ func payloadProvider(
     issuerId: String,
     keyId: String,
     key: URL
-) throws -> JWT {
+) throws -> AppleJWT {
     let privateKey = try privateKey(from: key)
-    return JWT(
+    return AppleJWT(
         keyIdentifier: keyId,
         issuerIdentifier: issuerId,
         privateKey: privateKey

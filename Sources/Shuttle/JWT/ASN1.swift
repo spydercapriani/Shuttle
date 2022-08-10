@@ -21,7 +21,7 @@ extension ASN1 {
 
         guard case let ASN1Element.seq(elements: es) = result,
             case let ASN1Element.bytes(data: privateOctest) = es[2] else {
-                throw JWT.Error.invalidASN1
+                throw AppleJWT.Error.invalidASN1
         }
 
         let (octest, _) = privateOctest.toASN1Element()
@@ -29,7 +29,7 @@ extension ASN1 {
             case let ASN1Element.bytes(data: privateKeyData) = seq[1],
             case let ASN1Element.constructed(tag: _, elem: publicElement) = seq[3],
             case let ASN1Element.bytes(data: publicKeyData) = publicElement else {
-                throw JWT.Error.invalidASN1
+                throw AppleJWT.Error.invalidASN1
         }
 
         let keyData = (publicKeyData.drop(while: { $0 == 0x00}) + privateKeyData)
@@ -51,7 +51,7 @@ extension ASN1 {
         guard case let ASN1Element.seq(elements: es) = result,
             case let ASN1Element.bytes(data: sigR) = es[0],
             case let ASN1Element.bytes(data: sigS) = es[1] else {
-                throw JWT.Error.invalidASN1
+                throw AppleJWT.Error.invalidASN1
         }
 
         let rawSig = sigR.dropLeadingBytes() + sigS.dropLeadingBytes()
