@@ -19,9 +19,9 @@ extension AppStoreConnect.V1 {
 		}
 
 		public struct GetParameters {
-			public var filterIdentifier: [String]?
-			public var filterName: [String]?
-			public var filterPlatform: [FilterPlatform]?
+            public var filterIdentifier: [BundleID.ID]?
+            public var filterName: [BundleID.Name]?
+			public var filterPlatform: [BundleIDPlatform]?
 			public var filterSeedID: [String]?
 			public var filterID: [String]?
 			public var sort: [Sort]?
@@ -33,12 +33,6 @@ extension AppStoreConnect.V1 {
 			public var fieldsApps: [FieldsApps]?
 			public var limitBundleIDCapabilities: Int?
 			public var limitProfiles: Int?
-
-			public enum FilterPlatform: String, Codable, CaseIterable {
-				case ios = "IOS"
-				case macOs = "MAC_OS"
-				case universal = "UNIVERSAL"
-			}
 
 			public enum Sort: String, Codable, CaseIterable {
 				case id
@@ -130,7 +124,22 @@ extension AppStoreConnect.V1 {
 				case subscriptionStatusURLVersionForSandbox = "subscriptionStatusUrlVersionForSandbox"
 			}
 
-			public init(filterIdentifier: [String]? = nil, filterName: [String]? = nil, filterPlatform: [FilterPlatform]? = nil, filterSeedID: [String]? = nil, filterID: [String]? = nil, sort: [Sort]? = nil, fieldsBundleIDs: [FieldsBundleIDs]? = nil, limit: Int? = nil, include: [Include]? = nil, fieldsBundleIDCapabilities: [FieldsBundleIDCapabilities]? = nil, fieldsProfiles: [FieldsProfiles]? = nil, fieldsApps: [FieldsApps]? = nil, limitBundleIDCapabilities: Int? = nil, limitProfiles: Int? = nil) {
+			public init(
+                filterIdentifier: [BundleID.ID]? = nil,
+                filterName: [BundleID.Name]? = nil,
+                filterPlatform: [BundleIDPlatform]? = nil,
+                filterSeedID: [String]? = nil,
+                filterID: [String]? = nil,
+                sort: [Sort]? = nil,
+                fieldsBundleIDs: [FieldsBundleIDs]? = nil,
+                limit: Int? = nil,
+                include: [Include]? = nil,
+                fieldsBundleIDCapabilities: [FieldsBundleIDCapabilities]? = nil,
+                fieldsProfiles: [FieldsProfiles]? = nil,
+                fieldsApps: [FieldsApps]? = nil,
+                limitBundleIDCapabilities: Int? = nil,
+                limitProfiles: Int? = nil
+            ) {
 				self.filterIdentifier = filterIdentifier
 				self.filterName = filterName
 				self.filterPlatform = filterPlatform

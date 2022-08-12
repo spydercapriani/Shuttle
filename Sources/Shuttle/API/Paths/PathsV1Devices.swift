@@ -19,24 +19,14 @@ extension AppStoreConnect.V1 {
 		}
 
 		public struct GetParameters {
-			public var filterName: [String]?
-			public var filterPlatform: [FilterPlatform]?
-			public var filterStatus: [FilterStatus]?
+            public var filterName: [Device.Name]?
+			public var filterPlatform: [BundleIDPlatform]?
+			public var filterStatus: [Device.Status]?
 			public var filterUdid: [String]?
-			public var filterID: [String]?
+            public var filterID: [Device.ID]?
 			public var sort: [Sort]?
 			public var fieldsDevices: [FieldsDevices]?
 			public var limit: Int?
-
-			public enum FilterPlatform: String, Codable, CaseIterable {
-				case ios = "IOS"
-				case macOs = "MAC_OS"
-			}
-
-			public enum FilterStatus: String, Codable, CaseIterable {
-				case enabled = "ENABLED"
-				case disabled = "DISABLED"
-			}
 
 			public enum Sort: String, Codable, CaseIterable {
 				case id
@@ -61,7 +51,16 @@ extension AppStoreConnect.V1 {
 				case udid
 			}
 
-			public init(filterName: [String]? = nil, filterPlatform: [FilterPlatform]? = nil, filterStatus: [FilterStatus]? = nil, filterUdid: [String]? = nil, filterID: [String]? = nil, sort: [Sort]? = nil, fieldsDevices: [FieldsDevices]? = nil, limit: Int? = nil) {
+			public init(
+                filterName: [Device.Name]? = nil,
+                filterPlatform: [BundleIDPlatform]? = nil,
+                filterStatus: [Device.Status]? = nil,
+                filterUdid: [String]? = nil,
+                filterID: [Device.ID]? = nil,
+                sort: [Sort]? = nil,
+                fieldsDevices: [FieldsDevices]? = nil,
+                limit: Int? = nil
+            ) {
 				self.filterName = filterName
 				self.filterPlatform = filterPlatform
 				self.filterStatus = filterStatus

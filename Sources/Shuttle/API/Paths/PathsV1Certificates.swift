@@ -19,27 +19,13 @@ extension AppStoreConnect.V1 {
 		}
 
 		public struct GetParameters {
-			public var filterCertificateType: [FilterCertificateType]?
+			public var filterCertificateType: [CertificateType]?
 			public var filterDisplayName: [String]?
 			public var filterSerialNumber: [String]?
 			public var filterID: [String]?
 			public var sort: [Sort]?
 			public var fieldsCertificates: [FieldsCertificates]?
 			public var limit: Int?
-
-			public enum FilterCertificateType: String, Codable, CaseIterable {
-				case iosDevelopment = "IOS_DEVELOPMENT"
-				case iosDistribution = "IOS_DISTRIBUTION"
-				case macAppDistribution = "MAC_APP_DISTRIBUTION"
-				case macInstallerDistribution = "MAC_INSTALLER_DISTRIBUTION"
-				case macAppDevelopment = "MAC_APP_DEVELOPMENT"
-				case developerIDKext = "DEVELOPER_ID_KEXT"
-				case developerIDApplication = "DEVELOPER_ID_APPLICATION"
-				case development = "DEVELOPMENT"
-				case distribution = "DISTRIBUTION"
-				case passTypeID = "PASS_TYPE_ID"
-				case passTypeIDWithNfc = "PASS_TYPE_ID_WITH_NFC"
-			}
 
 			public enum Sort: String, Codable, CaseIterable {
 				case certificateType
@@ -63,7 +49,7 @@ extension AppStoreConnect.V1 {
 				case serialNumber
 			}
 
-			public init(filterCertificateType: [FilterCertificateType]? = nil, filterDisplayName: [String]? = nil, filterSerialNumber: [String]? = nil, filterID: [String]? = nil, sort: [Sort]? = nil, fieldsCertificates: [FieldsCertificates]? = nil, limit: Int? = nil) {
+			public init(filterCertificateType: [CertificateType]? = nil, filterDisplayName: [String]? = nil, filterSerialNumber: [String]? = nil, filterID: [String]? = nil, sort: [Sort]? = nil, fieldsCertificates: [FieldsCertificates]? = nil, limit: Int? = nil) {
 				self.filterCertificateType = filterCertificateType
 				self.filterDisplayName = filterDisplayName
 				self.filterSerialNumber = filterSerialNumber

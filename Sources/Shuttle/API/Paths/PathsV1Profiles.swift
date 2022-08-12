@@ -20,8 +20,8 @@ extension AppStoreConnect.V1 {
 
 		public struct GetParameters {
 			public var filterName: [String]?
-			public var filterProfileState: [FilterProfileState]?
-			public var filterProfileType: [FilterProfileType]?
+            public var filterProfileState: [Profile.Attributes.ProfileState]?
+            public var filterProfileType: [Profile.Attributes.ProfileType]?
 			public var filterID: [String]?
 			public var sort: [Sort]?
 			public var fieldsProfiles: [FieldsProfiles]?
@@ -36,23 +36,6 @@ extension AppStoreConnect.V1 {
 			public enum FilterProfileState: String, Codable, CaseIterable {
 				case active = "ACTIVE"
 				case invalid = "INVALID"
-			}
-
-			public enum FilterProfileType: String, Codable, CaseIterable {
-				case iosAppDevelopment = "IOS_APP_DEVELOPMENT"
-				case iosAppStore = "IOS_APP_STORE"
-				case iosAppAdhoc = "IOS_APP_ADHOC"
-				case iosAppInhouse = "IOS_APP_INHOUSE"
-				case macAppDevelopment = "MAC_APP_DEVELOPMENT"
-				case macAppStore = "MAC_APP_STORE"
-				case macAppDirect = "MAC_APP_DIRECT"
-				case tvosAppDevelopment = "TVOS_APP_DEVELOPMENT"
-				case tvosAppStore = "TVOS_APP_STORE"
-				case tvosAppAdhoc = "TVOS_APP_ADHOC"
-				case tvosAppInhouse = "TVOS_APP_INHOUSE"
-				case macCatalystAppDevelopment = "MAC_CATALYST_APP_DEVELOPMENT"
-				case macCatalystAppStore = "MAC_CATALYST_APP_STORE"
-				case macCatalystAppDirect = "MAC_CATALYST_APP_DIRECT"
 			}
 
 			public enum Sort: String, Codable, CaseIterable {
@@ -117,7 +100,21 @@ extension AppStoreConnect.V1 {
 				case seedID = "seedId"
 			}
 
-			public init(filterName: [String]? = nil, filterProfileState: [FilterProfileState]? = nil, filterProfileType: [FilterProfileType]? = nil, filterID: [String]? = nil, sort: [Sort]? = nil, fieldsProfiles: [FieldsProfiles]? = nil, limit: Int? = nil, include: [Include]? = nil, fieldsCertificates: [FieldsCertificates]? = nil, fieldsDevices: [FieldsDevices]? = nil, fieldsBundleIDs: [FieldsBundleIDs]? = nil, limitCertificates: Int? = nil, limitDevices: Int? = nil) {
+            public init(
+                filterName: [Profile.Name]? = nil,
+                filterProfileState: [Profile.Attributes.ProfileState]? = nil,
+                filterProfileType: [Profile.Attributes.ProfileType]? = nil,
+                filterID: [Profile.ID]? = nil,
+                sort: [Sort]? = nil,
+                fieldsProfiles: [FieldsProfiles]? = nil,
+                limit: Int? = nil,
+                include: [Include]? = nil,
+                fieldsCertificates: [FieldsCertificates]? = nil,
+                fieldsDevices: [FieldsDevices]? = nil,
+                fieldsBundleIDs: [FieldsBundleIDs]? = nil,
+                limitCertificates: Int? = nil,
+                limitDevices: Int? = nil
+            ) {
 				self.filterName = filterName
 				self.filterProfileState = filterProfileState
 				self.filterProfileType = filterProfileType

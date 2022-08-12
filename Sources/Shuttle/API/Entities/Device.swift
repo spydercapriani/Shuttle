@@ -12,6 +12,11 @@ public struct Device: Codable, Identifiable {
 	public enum `Type`: String, Codable, CaseIterable {
 		case devices
 	}
+    
+    public enum Status: String, Codable, CaseIterable {
+        case enabled = "ENABLED"
+        case disabled = "DISABLED"
+    }
 
 	public struct Attributes: Codable {
 		public var name: String?
@@ -29,11 +34,6 @@ public struct Device: Codable, Identifiable {
 			case ipod = "IPOD"
 			case appleTv = "APPLE_TV"
 			case mac = "MAC"
-		}
-
-		public enum Status: String, Codable, CaseIterable {
-			case enabled = "ENABLED"
-			case disabled = "DISABLED"
 		}
 
 		public init(name: String? = nil, platform: BundleIDPlatform? = nil, udid: String? = nil, deviceClass: DeviceClass? = nil, status: Status? = nil, model: String? = nil, addedDate: Date? = nil) {
