@@ -3,19 +3,19 @@
 
 import Foundation
 
-public struct BundleIDCapabilityCreateRequest: Codable {
+public struct BundleIDCapabilityCreateRequest: Encodable {
 	public var data: Data
 
-	public struct Data: Codable {
-		public var type: `Type`
+	public struct Data: Encodable {
+        public let type: `Type` = .bundleIDCapabilities
 		public var attributes: Attributes
 		public var relationships: Relationships
 
-		public enum `Type`: String, Codable, CaseIterable {
+		public enum `Type`: String, Encodable, CaseIterable {
 			case bundleIDCapabilities = "bundleIdCapabilities"
 		}
 
-		public struct Attributes: Codable {
+		public struct Attributes: Encodable {
 			public var capabilityType: CapabilityType
 			public var settings: [CapabilitySetting]?
 
@@ -25,22 +25,21 @@ public struct BundleIDCapabilityCreateRequest: Codable {
 			}
 		}
 
-		public struct Relationships: Codable {
+		public struct Relationships: Encodable {
 			public var bundleID: BundleID
 
-			public struct BundleID: Codable {
+			public struct BundleID: Encodable {
 				public var data: Data
 
-				public struct Data: Codable, Identifiable {
-					public var type: `Type`
-					public var id: String
+				public struct Data: Encodable, Identifiable {
+                    public let type: `Type` = .bundleIDs
+                    public var id: Shuttle.BundleID.ID
 
-					public enum `Type`: String, Codable, CaseIterable {
+					public enum `Type`: String, Encodable, CaseIterable {
 						case bundleIDs = "bundleIds"
 					}
 
-					public init(type: `Type`, id: String) {
-						self.type = type
+                    public init(id: Shuttle.BundleID.ID) {
 						self.id = id
 					}
 				}
@@ -59,8 +58,10 @@ public struct BundleIDCapabilityCreateRequest: Codable {
 			}
 		}
 
-		public init(type: `Type`, attributes: Attributes, relationships: Relationships) {
-			self.type = type
+		public init(
+            attributes: Attributes,
+            relationships: Relationships
+        ) {
 			self.attributes = attributes
 			self.relationships = relationships
 		}
@@ -69,4 +70,26 @@ public struct BundleIDCapabilityCreateRequest: Codable {
 	public init(data: Data) {
 		self.data = data
 	}
+    
+    public init(
+        type: CapabilityType,
+        settings: [CapabilitySetting]? = nil,
+        id: Shuttle.BundleID.ID
+    ) {
+        self.init(
+            data: .init(
+                attributes: .init(
+                    capabilityType: type,
+                    settings: settings
+                ),
+                relationships: .init(
+                    bundleID: .init(
+                        data: .init(
+                            id: id
+                        )
+                    )
+                )
+            )
+        )
+    }
 }

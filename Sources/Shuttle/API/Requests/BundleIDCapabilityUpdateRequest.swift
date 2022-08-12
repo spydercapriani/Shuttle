@@ -3,30 +3,35 @@
 
 import Foundation
 
-public struct BundleIDCapabilityUpdateRequest: Codable {
+public struct BundleIDCapabilityUpdateRequest: Encodable {
 	public var data: Data
 
-	public struct Data: Codable, Identifiable {
-		public var type: `Type`
+	public struct Data: Encodable, Identifiable {
+        public let type: `Type` = .bundleIDCapabilities
 		public var id: String
 		public var attributes: Attributes?
 
-		public enum `Type`: String, Codable, CaseIterable {
+		public enum `Type`: String, Encodable, CaseIterable {
 			case bundleIDCapabilities = "bundleIdCapabilities"
 		}
 
-		public struct Attributes: Codable {
+		public struct Attributes: Encodable {
 			public var capabilityType: CapabilityType?
 			public var settings: [CapabilitySetting]?
 
-			public init(capabilityType: CapabilityType? = nil, settings: [CapabilitySetting]? = nil) {
+			public init(
+                capabilityType: CapabilityType? = nil,
+                settings: [CapabilitySetting]? = nil
+            ) {
 				self.capabilityType = capabilityType
 				self.settings = settings
 			}
 		}
 
-		public init(type: `Type`, id: String, attributes: Attributes? = nil) {
-			self.type = type
+		public init(
+            id: BundleIDCapability.ID,
+            attributes: Attributes? = nil
+        ) {
 			self.id = id
 			self.attributes = attributes
 		}
@@ -35,4 +40,20 @@ public struct BundleIDCapabilityUpdateRequest: Codable {
 	public init(data: Data) {
 		self.data = data
 	}
+    
+    public init(
+        id: BundleIDCapability.ID,
+        type: CapabilityType?,
+        settings: [CapabilitySetting]?
+    ) {
+        self.init(
+            data: .init(
+                id: id,
+                attributes: .init(
+                    capabilityType: type,
+                    settings: settings
+                )
+            )
+        )
+    }
 }
