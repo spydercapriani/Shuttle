@@ -9,10 +9,17 @@ let package = Package(
         .macOS(.v12)
     ],
     products: [
+        .executable(
+            name: "shuttle",
+            targets: [
+                "ShuttleTool"
+            ]
+        ),
         .library(
             name: "Shuttle",
             targets: [
-                "Shuttle"
+//                "Shuttle",
+                "ProvisioningAPI"
             ]
         ),
     ],
@@ -23,30 +30,47 @@ let package = Package(
         .package(url: "https://github.com/vapor/console-kit.git", from: "4.4.1"),
     ],
     targets: [
-        .executableTarget(
-            name: "playground",
-            dependencies: [
-                "Shuttle",
-                .product(name: "ConsoleKit", package: "console-kit"),
-            ],
-            path: "Example/CLI"
-        ),
+        // MARK: - Shuttle Library
         .target(
             name: "Shuttle",
             dependencies: [
                 "Get",
                 "URLQueryEncoder",
-            ],
-            exclude: [
-                "OpenAPI/app_store_connect_api_2.0_openapi.json"
             ]
         ),
-        .testTarget(
-            name: "ShuttleTests",
+        
+        // MARK: - Shuttle Tests
+//        .testTarget(
+//            name: "ShuttleTests",
+//            dependencies: [
+//                "Shuttle",
+//                "Mocker",
+//            ]
+//        ),
+        
+        // MARK: - Shuttle CLI Tool
+        .executableTarget(
+            name: "ShuttleTool",
             dependencies: [
-                "Shuttle",
-                "Mocker",
+                "ProvisioningTools",
+                .product(name: "ConsoleKit", package: "console-kit"),
             ]
         ),
+        
+        .target(
+            name: "ProvisioningAPI",
+            dependencies: [
+                "Shuttle"
+            ]
+        ),
+        
+        // MARK: - Provisioning Tool
+        .target(
+            name: "ProvisioningTools",
+            dependencies: [
+                "ProvisioningAPI"
+            ]
+        ),
+        
     ]
 )

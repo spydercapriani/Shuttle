@@ -7,7 +7,7 @@ import URLQueryEncoder
 
 public enum AppStoreConnect {
     /// Default API Client to be used for all App Store Connect API requests.
-    static var client: APIClient!
+    public static var client: APIClient!
 }
 
 public extension APIClient {

@@ -192,3 +192,33 @@ private extension P8PrivateKey {
         }
     }
 }
+
+public func AppleTokenProvider(
+    issuerId: String,
+    keyId: String,
+    key: URL
+) throws -> AppleJWT {
+    let privateKey = try privateKey(from: key)
+    return AppleJWT(
+        keyIdentifier: keyId,
+        issuerIdentifier: issuerId,
+        privateKey: privateKey
+    )
+}
+
+private func privateKey(from file: URL) throws -> String {
+    var privateKey = try String(contentsOf: file)
+    
+    // remove the header string
+    let offset = String("-----BEGIN PRIVATE KEY-----").count
+    let index = privateKey.index(privateKey.startIndex, offsetBy: offset+1)
+    privateKey = String(privateKey.suffix(from: index))
+    // remove end of line chars
+    privateKey = privateKey.replacingOccurrences(of: "\n", with: "")
+    // remove the tail string
+    let tailWord = "-----END PRIVATE KEY-----"
+    if let lowerBound = privateKey.range(of: tailWord)?.lowerBound {
+        privateKey = String(privateKey.prefix(upTo: lowerBound))
+    }
+    return privateKey
+}
