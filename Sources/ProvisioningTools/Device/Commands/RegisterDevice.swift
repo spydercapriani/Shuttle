@@ -1,6 +1,6 @@
 //
-//  RegisterCommand.swift
-//
+//  RegisterDevice.swift
+//  ProvisioningTools
 //
 
 import Foundation
@@ -9,7 +9,7 @@ import Shuttle
 import Get
 import ProvisioningAPI
 
-struct RegisterCommand: AsyncCommand {
+struct RegisterDevice: AsyncCommand {
     
     struct Signature: CommandSignature {
         @Option(
@@ -67,12 +67,26 @@ struct RegisterCommand: AsyncCommand {
         
         do {
             context.console.info("Checking if \(deviceUDID) is already registered...")
-            let existingDevice = try await Device.udid(deviceUDID)
-            context.console.success("\(existingDevice.name) already exists!")
+            var existingDevice = try await Device.udid(deviceUDID)
+            
+            context.console.success("\(existingDevice.name) exists!")
+            if existingDevice.name != deviceName,
+               context.console.confirm("Would you like to update the name of this device to \"\(deviceName)\"?"){
+                existingDevice = try await existingDevice.update(
+                    name: deviceName,
+                    status: .enabled
+                )
+                context.console.success("Successfully updated \(existingDevice.name)!")
+                try Devices.printInfo(for: existingDevice, using: context)
+            }
             guard
                 context.console.confirm("Would you like to enroll \(existingDevice.name) to all profiles?")
             else { return }
-            try await enrollToAllProfiles(existingDevice, using: context)
+            try await Self.enroll(
+                existingDevice,
+                to: .all,
+                using: context
+            )
             return
         } catch {
             let device = try await Device.register(
@@ -81,18 +95,23 @@ struct RegisterCommand: AsyncCommand {
                 platform: .ios
             )
             context.console.success("Successfully registered \(device.name)")
+            try Devices.printInfo(for: device, using: context)
             guard
                 context.console.confirm("Would you like to enroll \(device.name) to all profiles?")
             else { return }
-            try await enrollToAllProfiles(device, using: context)
+            try await Self.enroll(
+                device,
+                to: .all,
+                using: context
+            )
         }
     }
     
-    func enrollToAllProfiles(
+    static func enroll(
         _ device: Device,
+        to profiles: Set<Profile>,
         using context: CommandContext
     ) async throws {
-        let profiles: Set<Profile> = try await .all
         try await profiles.concurrentForEach { profile in
             context.console.info("Enrolling \(device.name) to \(profile.name)")
             let updatedProfile = try await profile.enroll(device)

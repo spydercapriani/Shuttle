@@ -74,3 +74,33 @@ public extension Sequence {
         }
     }
 }
+
+// MARK: - Async CompactMap
+public extension Sequence {
+    
+    func asyncCompactMap<T>(
+        _ transform: (Element) async throws -> T?
+    ) async rethrows -> [T] {
+        var values = [T?]()
+        
+        try await self.asyncForEach {
+            try await values.append(transform($0))
+        }
+
+        return values.compactMap { $0 }
+    }
+    
+    func concurrentCompactMap<T>(
+        _ transform: @escaping (Element) async throws -> T?
+    ) async throws -> [T] {
+        let tasks = map { element in
+            Task {
+                try await transform(element)
+            }
+        }
+        
+        return try await tasks.asyncCompactMap { task in
+            try await task.value
+        }
+    }
+}

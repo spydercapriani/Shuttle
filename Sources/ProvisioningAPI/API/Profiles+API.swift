@@ -218,6 +218,26 @@ public extension Profile {
         try await enroll(Set([device]))
     }
     
+    func remove(_ device: Device) async throws -> Profile {
+        var devices: Set<Device> = try await .devices(forProfile: self)
+        devices.remove(device)
+        return try await update(
+            bundleId: nil,
+            devices: devices,
+            certificates: nil
+        )
+    }
+    
+    func remove(_ devices: Set<Device>) async throws -> Profile {
+        var profileDevices: Set<Device> = try await .devices(forProfile: self)
+        profileDevices.subtract(devices)
+        return try await update(
+            bundleId: nil,
+            devices: profileDevices,
+            certificates: nil
+        )
+    }
+    
     func enroll(_ certificates: Set<Certificate>) async throws -> Profile {
         var profileCertificates: Set<Certificate> = try await .certificates(forProfile: self)
         profileCertificates.formUnion(Set(certificates))
@@ -230,6 +250,26 @@ public extension Profile {
     
     func enroll(_ certificate: Certificate) async throws -> Profile {
         try await enroll(Set([certificate]))
+    }
+    
+    func remove(_ certificate: Certificate) async throws -> Profile {
+        var certificates: Set<Certificate> = try await .certificates(forProfile: self)
+        certificates.remove(certificate)
+        return try await update(
+            bundleId: nil,
+            devices: nil,
+            certificates: certificates
+        )
+    }
+    
+    func remove(_ certificates: Set<Certificate>) async throws -> Profile {
+        var profileCertificates: Set<Certificate> = try await .certificates(forProfile: self)
+        profileCertificates.subtract(certificates)
+        return try await update(
+            bundleId: nil,
+            devices: nil,
+            certificates: profileCertificates
+        )
     }
 }
 
@@ -290,7 +330,7 @@ public extension Array where Element == Profile {
     }
 }
 
-// MARK: Profiles - By Profile Type
+// MARK: Profiles - By Profile Type - Set
 public extension Set where Element == Profile {
     
     static func profiles(ofType type: Profile.Attributes.ProfileType...) async throws -> Set<Profile> {
@@ -303,6 +343,7 @@ public extension Set where Element == Profile {
     }
 }
 
+// MARK: Profiles - By Profile Type - Array
 public extension Array where Element == Profile {
     
     static func profiles(ofType type: Profile.Attributes.ProfileType...) async throws -> [Profile] {
@@ -314,7 +355,7 @@ public extension Array where Element == Profile {
     }
 }
 
-// MARK: Profiles - By BundleID
+// MARK: Profiles - By BundleID - Array
 public extension Array where Element == Profile {
     
     static func profiles(forID id: BundleID.ID) async throws -> [Profile] {
@@ -331,5 +372,48 @@ public extension Array where Element == Profile {
     
     static func profiles(forBundleID bundleId: BundleID) async throws -> [Profile] {
         try await profiles(forID: bundleId.id)
+    }
+}
+
+// MARK: Profiles - By BundleID - Set
+public extension Set where Element == Profile {
+    
+    static func profiles(forID id: BundleID.ID) async throws -> Set<Profile> {
+        try await [Profile].profiles(forID: id).uniques
+    }
+    
+    static func profiles(forName name: BundleID.Name) async throws -> Set<Profile> {
+        let bundleId = try await BundleID.named(name)
+        return try await profiles(forBundleID: bundleId)
+    }
+    
+    static func profiles(forBundleID bundleId: BundleID) async throws -> Set<Profile> {
+        try await profiles(forID: bundleId.id)
+    }
+}
+
+// MARK: Profiles - By Device - Set
+public extension Set where Element == Profile {
+    
+    static func profiles(forDeviceID id: Device.ID) async throws -> Set<Profile> {
+        let allProfiles: Set<Profile> = try await .all
+        
+        var profiles = Set<Profile>()
+        try await allProfiles.concurrentForEach { profile in
+            let devices: Set<Device> = try await .devices(forProfile: profile)
+            if devices.map(\.uuid).contains(id) {
+                profiles.insert(profile)
+            }
+        }
+        return profiles
+    }
+    
+    static func profiles(forDeviceName name: Device.Name) async throws -> Set<Profile> {
+        let device = try await Device.named(name)
+        return try await profiles(forDeviceID: device.id)
+    }
+
+    static func profiles(forDevice device: Device) async throws -> Set<Profile> {
+        try await profiles(forDeviceID: device.id)
     }
 }

@@ -63,16 +63,23 @@ public extension Device {
     static func register(
         name: Device.Name,
         udid: Device.Identifier,
-        platform: BundleIDPlatform
+        platform: BundleIDPlatform,
+        to profiles: Set<Profile>? = nil
     ) async throws -> Device {
         let body = DeviceCreateRequest(
             name: name,
             udid: udid,
             platform: platform
         )
-        return try await AppStoreConnect.v1
+        let device = try await AppStoreConnect.v1
             .devices.post(body)
             .value.data
+        
+        try await profiles?.concurrentForEach { profile in
+            _ = try await profile.enroll(device)
+        }
+        
+        return device
     }
     
     static func update(
