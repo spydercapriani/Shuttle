@@ -259,3 +259,28 @@ public struct Profile: Codable, Identifiable {
 		self.links = links
 	}
 }
+
+extension Profile: UniquelyIdentifiable {
+    
+    public var uuid: String {
+        self.attributes?.uuid ?? ""
+    }
+}
+
+// MARK: - Equatable
+extension Profile: Equatable {
+    
+    public static func == (lhs: Profile, rhs: Profile) -> Bool {
+        lhs.id == rhs.id ||
+        lhs.uuid == rhs.uuid
+    }
+}
+
+// MARK: - Hashable
+extension Profile: Hashable {
+    
+    public func hash(into hasher: inout Hasher) {
+        hasher.combine(id)
+        hasher.combine(uuid)
+    }
+}

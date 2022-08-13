@@ -39,13 +39,22 @@ struct RegisterCommand: AsyncCommand {
     let help = "This command helps register devices to the developers portal."
     
     func run(using context: CommandContext, signature: Signature) async throws {
-        let deviceName = signature.deviceName ?? context.console.ask("Name of Device:")
-        let deviceUDID = signature.deviceUDID ?? context.console.ask("Device UDID:")
-        
-        let issuerId = signature.issuerId ?? context.console.ask("Issuer ID:")
-        let keyId = signature.keyId ?? context.console.ask("Key ID:")
-        let key = URL(fileURLWithPath: signature.key ?? context.console.ask("Key File Location:"))
-        
+        guard
+            let issuerId = signature.issuerId
+        else {
+            throw CommandError.missingRequiredArgument("--issuerId <appStoreConnect_issuer_id>")
+        }
+        guard
+            let keyId = signature.keyId
+        else {
+            throw CommandError.missingRequiredArgument("--keyId <appStoreConnect_key_id>")
+        }
+        guard
+            let path = signature.key
+        else {
+            throw CommandError.missingRequiredArgument("--key <AppStoreConnect.p8_key_file>")
+        }
+        let key = URL(fileURLWithPath: path)
         let provider = try AppleTokenProvider(
             issuerId: issuerId,
             keyId: keyId,
@@ -53,11 +62,41 @@ struct RegisterCommand: AsyncCommand {
         )
         AppStoreConnect.client = APIClient(token: provider)
         
-        let device = try await Device.register(
-            name: deviceName,
-            udid: deviceUDID,
-            platform: .ios
-        )
-        context.console.success("Successfully registered \(device.name)")
+        let deviceName = signature.deviceName ?? context.console.ask("Name of Device:")
+        let deviceUDID = signature.deviceUDID ?? context.console.ask("Device UDID:")
+        
+        do {
+            context.console.info("Checking if \(deviceUDID) is already registered...")
+            let existingDevice = try await Device.udid(deviceUDID)
+            context.console.success("\(existingDevice.name) already exists!")
+            guard
+                context.console.confirm("Would you like to enroll \(existingDevice.name) to all profiles?")
+            else { return }
+            try await enrollToAllProfiles(existingDevice, using: context)
+            return
+        } catch {
+            let device = try await Device.register(
+                name: deviceName,
+                udid: deviceUDID,
+                platform: .ios
+            )
+            context.console.success("Successfully registered \(device.name)")
+            guard
+                context.console.confirm("Would you like to enroll \(device.name) to all profiles?")
+            else { return }
+            try await enrollToAllProfiles(device, using: context)
+        }
+    }
+    
+    func enrollToAllProfiles(
+        _ device: Device,
+        using context: CommandContext
+    ) async throws {
+        let profiles: Set<Profile> = try await .all
+        try await profiles.concurrentForEach { profile in
+            context.console.info("Enrolling \(device.name) to \(profile.name)")
+            let updatedProfile = try await profile.enroll(device)
+            context.console.success("Successfully enrolled \(device.name) to \(updatedProfile.name)")
+        }
     }
 }

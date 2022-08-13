@@ -214,6 +214,10 @@ public extension Profile {
         )
     }
     
+    func enroll(_ device: Device) async throws -> Profile {
+        try await enroll(Set([device]))
+    }
+    
     func enroll(_ certificates: Set<Certificate>) async throws -> Profile {
         var profileCertificates: Set<Certificate> = try await .certificates(forProfile: self)
         profileCertificates.formUnion(Set(certificates))
@@ -223,27 +227,32 @@ public extension Profile {
             certificates: profileCertificates
         )
     }
+    
+    func enroll(_ certificate: Certificate) async throws -> Profile {
+        try await enroll(Set([certificate]))
+    }
 }
 
-// MARK: Profile - All
-public extension Array where Element == Profile {
+// MARK: Profile - All - Set
+public extension Set where Element == Profile {
     
-    static var all: [Profile] {
+    static var all: Set<Profile> {
         get async throws {
             try await AppStoreConnect.v1
                 .profiles.get()
                 .value.data
+                .uniques
         }
     }
     
-    static var active: [Profile] {
+    static var active: Set<Profile> {
         get async throws {
             try await all
                 .filter { $0.attributes?.profileState == .active }
         }
     }
     
-    static var invalid: [Profile] {
+    static var invalid: Set<Profile> {
         get async throws {
             try await all
                 .filter { $0.attributes?.profileState == .invalid }
@@ -251,7 +260,49 @@ public extension Array where Element == Profile {
     }
 }
 
+// MARK: Profile - All - Array
+public extension Array where Element == Profile {
+    
+    static func all(
+        sortedBy: AppStoreConnect.V1.Profiles.GetParameters.Sort? = nil
+    ) async throws -> [Profile] {
+        try await AppStoreConnect.v1
+            .profiles.get(
+                parameters: .init(
+                    sort: sortedBy
+                )
+            )
+            .value.data
+    }
+    
+    static func active(
+        sortedBy: AppStoreConnect.V1.Profiles.GetParameters.Sort? = nil
+    ) async throws -> [Profile] {
+        try await all(sortedBy: sortedBy)
+            .filter { $0.attributes?.profileState == .active }
+    }
+    
+    static func invalid(
+        sortedBy: AppStoreConnect.V1.Profiles.GetParameters.Sort? = nil
+    ) async throws -> [Profile] {
+        try await all(sortedBy: sortedBy)
+            .filter { $0.attributes?.profileState == .invalid }
+    }
+}
+
 // MARK: Profiles - By Profile Type
+public extension Set where Element == Profile {
+    
+    static func profiles(ofType type: Profile.Attributes.ProfileType...) async throws -> Set<Profile> {
+        try await AppStoreConnect.v1
+            .profiles.get(parameters: .init(
+                filterProfileType: type
+            ))
+            .value.data
+            .uniques
+    }
+}
+
 public extension Array where Element == Profile {
     
     static func profiles(ofType type: Profile.Attributes.ProfileType...) async throws -> [Profile] {

@@ -145,7 +145,7 @@ public extension Array where Element == Device {
     }
 }
 
-// MARK: Devices - All
+// MARK: Devices - All - Set
 public extension Set where Element == Device {
     
     static var all: Set<Device> {
@@ -172,6 +172,7 @@ public extension Set where Element == Device {
     }
 }
 
+// MARK: Devices - All - Array
 public extension Array where Element == Device {
     
     static func all(
