@@ -18,7 +18,6 @@ let package = Package(
         .library(
             name: "Shuttle",
             targets: [
-//                "Shuttle",
                 "ProvisioningAPI"
             ]
         ),
