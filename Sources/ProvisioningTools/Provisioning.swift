@@ -12,6 +12,7 @@ public struct Provisioning: AsyncCommandGroup {
     
     public let commands: [String : AnyAsyncCommand] = [
         "devices": Devices(),
+        "profiles": Profiles(),
     ]
     
     public let help = "Assists with App Store Connect Provisioning Actions"
