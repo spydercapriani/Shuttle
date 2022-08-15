@@ -60,7 +60,7 @@ struct RegisterDevice: AsyncCommand {
             keyId: keyId,
             key: key
         )
-        AppStoreConnect.client = APIClient(token: provider)
+        AppStoreConnect.client = AppStoreConnectClient(provider)
         
         let deviceName = signature.deviceName ?? context.console.ask("Name of Device:")
         let deviceUDID = signature.deviceUDID ?? context.console.ask("Device UDID:")

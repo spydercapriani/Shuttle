@@ -5,9 +5,20 @@ import Foundation
 import Get
 import URLQueryEncoder
 
+@propertyWrapper
+public struct AppStoreConnectClient {
+    
+    public var wrappedValue: APIClient
+    
+    public init(_ provider: AppleJWT) {
+        self.wrappedValue = APIClient(token: provider)
+    }
+}
+
 public enum AppStoreConnect {
+    
     /// Default API Client to be used for all App Store Connect API requests.
-    public static var client: APIClient!
+    public static var client: AppStoreConnectClient!
 }
 
 public extension APIClient {
@@ -69,7 +80,8 @@ public extension Request {
     
     var location: URL {
         get async throws {
-            try await download(using: AppStoreConnect.client).location
+            try await download(using: AppStoreConnect.client.wrappedValue)
+                .location
         }
     }
 }
@@ -82,7 +94,7 @@ public extension Request where Response: Decodable {
     
     var response: Get.Response<Response> {
         get async throws {
-            try await send(using: AppStoreConnect.client)
+            try await send(using: AppStoreConnect.client.wrappedValue)
         }
     }
     
@@ -101,7 +113,7 @@ public extension Request where Response == Void {
     
     var response: Get.Response<Void> {
         get async throws {
-            try await send(using: AppStoreConnect.client)
+            try await send(using: AppStoreConnect.client.wrappedValue)
         }
     }
     
@@ -116,7 +128,7 @@ public extension Request where Response == URL {
     
     var response: Get.Response<URL> {
         get async throws {
-            try await download(using: AppStoreConnect.client)
+            try await download(using: AppStoreConnect.client.wrappedValue)
         }
     }
 }

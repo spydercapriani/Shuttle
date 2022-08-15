@@ -38,7 +38,7 @@ public extension Profile {
     func download() async throws -> URL {
         try await AppStoreConnect.v1
             .profiles.id(self.id)
-            .get().download(using: AppStoreConnect.client)
+            .get().download(using: AppStoreConnect.client.wrappedValue)
             .value
     }
 }

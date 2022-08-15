@@ -6,7 +6,6 @@
 import Foundation
 import ConsoleKit
 import Shuttle
-import Get
 import ProvisioningAPI
 
 struct UpdateDevice: AsyncCommand {
@@ -66,7 +65,7 @@ struct UpdateDevice: AsyncCommand {
             keyId: keyId,
             key: key
         )
-        AppStoreConnect.client = APIClient(token: provider)
+        AppStoreConnect.client = AppStoreConnectClient(provider)
         
         let deviceName = signature.deviceName
         let deviceUDID = signature.deviceUDID ?? context.console.ask("Device UDID:")

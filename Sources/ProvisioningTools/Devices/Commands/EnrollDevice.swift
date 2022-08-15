@@ -6,7 +6,6 @@
 import Foundation
 import ConsoleKit
 import Shuttle
-import Get
 import ProvisioningAPI
 
 struct EnrollDevice: AsyncCommand {
@@ -67,7 +66,7 @@ struct EnrollDevice: AsyncCommand {
             keyId: keyId,
             key: key
         )
-        AppStoreConnect.client = APIClient(token: provider)
+        AppStoreConnect.client = AppStoreConnectClient(provider)
         
         var devices = Set<Device>()
         if let deviceUDID = signature.deviceUDID {

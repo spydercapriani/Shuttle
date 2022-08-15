@@ -1,6 +1,6 @@
 //
 //  Devices.swift
-//  ShuttleTool
+//  ProvisioningTools
 //
 
 import Foundation
