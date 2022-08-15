@@ -401,7 +401,7 @@ public extension Set where Element == Profile {
         var profiles = Set<Profile>()
         try await allProfiles.concurrentForEach { profile in
             let devices: Set<Device> = try await .devices(forProfile: profile)
-            if devices.map(\.uuid).contains(id) {
+            if devices.map(\.id).contains(id) {
                 profiles.insert(profile)
             }
         }
@@ -410,6 +410,11 @@ public extension Set where Element == Profile {
     
     static func profiles(forDeviceName name: Device.Name) async throws -> Set<Profile> {
         let device = try await Device.named(name)
+        return try await profiles(forDeviceID: device.id)
+    }
+    
+    static func profiles(forDeviceUDID udid: Device.Identifier) async throws -> Set<Profile> {
+        let device = try await Device.udid(udid)
         return try await profiles(forDeviceID: device.id)
     }
 
