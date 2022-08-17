@@ -137,14 +137,27 @@ public extension BundleID {
     }
 }
 
-// MARK: BundleIDs - All
+// MARK: BundleIDs - All - Set
+public extension Set where Element == BundleID {
+    
+    static var all: Set<BundleID> {
+        get async throws {
+            try await AppStoreConnect.v1
+                .bundleIDs.get()
+                .value.all
+                .uniques
+        }
+    }
+}
+
+// MARK: BundleIDs - All - Array
 public extension Array where Element == BundleID {
     
     static var all: [BundleID] {
         get async throws {
             try await AppStoreConnect.v1
                 .bundleIDs.get()
-                .value.data
+                .value.all
         }
     }
 }

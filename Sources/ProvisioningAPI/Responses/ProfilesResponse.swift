@@ -50,3 +50,6 @@ public struct ProfilesResponse: Codable {
 		self.meta = meta
 	}
 }
+
+// MARK: - LargeDataSet
+extension ProfilesResponse: LargeDataSet { }

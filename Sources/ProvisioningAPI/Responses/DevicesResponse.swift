@@ -19,3 +19,6 @@ public struct DevicesResponse: Codable {
 		self.meta = meta
 	}
 }
+
+// MARK: - LargeDataSet
+extension DevicesResponse: LargeDataSet { }

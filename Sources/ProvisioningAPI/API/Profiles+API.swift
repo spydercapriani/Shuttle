@@ -280,7 +280,7 @@ public extension Set where Element == Profile {
         get async throws {
             try await AppStoreConnect.v1
                 .profiles.get()
-                .value.data
+                .value.all
                 .uniques
         }
     }
@@ -312,7 +312,7 @@ public extension Array where Element == Profile {
                     sort: sortedBy
                 )
             )
-            .value.data
+            .value.all
     }
     
     static func active(
@@ -338,7 +338,7 @@ public extension Set where Element == Profile {
             .profiles.get(parameters: .init(
                 filterProfileType: type
             ))
-            .value.data
+            .value.all
             .uniques
     }
 }
@@ -351,7 +351,7 @@ public extension Array where Element == Profile {
             .profiles.get(parameters: .init(
                 filterProfileType: type
             ))
-            .value.data
+            .value.all
     }
 }
 
@@ -362,7 +362,7 @@ public extension Array where Element == Profile {
         try await AppStoreConnect.v1
             .bundleIDs.id(id)
             .profiles.get()
-            .value.data
+            .value.all
     }
     
     static func profiles(forName name: BundleID.Name) async throws -> [Profile] {

@@ -4,11 +4,15 @@
 import Foundation
 
 public struct PagedDocumentLinks: Codable {
-	public var this: String
-	public var first: String?
-	public var next: String?
+	public let this: URL
+	public let first: URL?
+	public let next: URL?
 
-	public init(this: String, first: String? = nil, next: String? = nil) {
+	public init(
+        this: URL,
+        first: URL? = nil,
+        next: URL? = nil
+    ) {
 		self.this = this
 		self.first = first
 		self.next = next

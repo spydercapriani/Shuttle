@@ -82,7 +82,7 @@ public extension Set where Element == Certificate {
         get async throws {
             try await AppStoreConnect.v1
                 .certificates.get()
-                .value.data
+                .value.all
                 .uniques
         }
     }
@@ -122,7 +122,7 @@ public extension Set where Element == Certificate {
     static func certificates(ofType type: CertificateType...) async throws -> Set<Certificate> {
         try await AppStoreConnect.v1
             .certificates.get(parameters: .init(filterCertificateType: type))
-            .value.data
+            .value.all
             .uniques
     }
 }
@@ -134,7 +134,7 @@ public extension Set where Element == Certificate {
         try await AppStoreConnect.v1
             .profiles.id(id)
             .certificates.get()
-            .value.data
+            .value.all
             .uniques
     }
     

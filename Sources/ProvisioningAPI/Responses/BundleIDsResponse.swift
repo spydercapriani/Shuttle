@@ -50,3 +50,6 @@ public struct BundleIDsResponse: Codable {
 		self.meta = meta
 	}
 }
+
+// MARK: - LargeDataSet
+extension BundleIDsResponse: LargeDataSet { }

@@ -19,3 +19,6 @@ public struct CertificatesResponse: Codable {
 		self.meta = meta
 	}
 }
+
+// MARK: - LargeDataSet
+extension CertificatesResponse: LargeDataSet { }

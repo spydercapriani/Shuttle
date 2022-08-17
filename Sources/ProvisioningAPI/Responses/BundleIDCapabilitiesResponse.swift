@@ -19,3 +19,6 @@ public struct BundleIDCapabilitiesResponse: Codable {
 		self.meta = meta
 	}
 }
+
+// MARK: - LargeDataSet
+extension BundleIDCapabilitiesResponse: LargeDataSet { }

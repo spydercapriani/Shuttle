@@ -82,7 +82,7 @@ public extension Array where Element == BundleIDCapability {
         try await AppStoreConnect.v1
             .bundleIDs.id(id)
             .bundleIDCapabilities.get()
-            .value.data
+            .value.all
     }
     
     static func capabilities(forBundleID bundleId: BundleID) async throws -> [BundleIDCapability] {

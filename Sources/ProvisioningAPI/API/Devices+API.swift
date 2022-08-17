@@ -132,7 +132,7 @@ public extension Set where Element == Device {
             .devices.get(parameters: .init(
                 filterPlatform: platform
             ))
-            .value.data
+            .value.all
             .uniques
     }
 }
@@ -148,7 +148,7 @@ public extension Array where Element == Device {
                 filterPlatform: platform,
                 sort: sortedBy
             ))
-            .value.data
+            .value.all
     }
 }
 
@@ -159,7 +159,7 @@ public extension Set where Element == Device {
         get async throws {
             try await AppStoreConnect.v1
                 .devices.get()
-                .value.data
+                .value.all
                 .uniques
         }
     }
@@ -191,7 +191,7 @@ public extension Array where Element == Device {
                     sort: sortedBy
                 )
             )
-            .value.data
+            .value.all
     }
     
     static func enabled(
@@ -213,20 +213,19 @@ public extension Array where Element == Device {
 public extension Set where Element == Device {
     
     static func devices(forID id: Profile.ID) async throws -> Set<Device> {
-        Set(
-            try await AppStoreConnect.v1
-                .profiles.id(id)
-                .devices.get()
-                .value.data
-        )
+        try await AppStoreConnect.v1
+            .profiles.id(id)
+            .devices.get()
+            .value.all
+            .uniques
     }
     
     static func devices(forProfile profile: Profile) async throws -> Set<Device> {
-        Set(try await devices(forID: profile.id))
+        try await devices(forID: profile.id)
     }
     
     static func devices(forName name: Profile.Name) async throws -> Set<Device> {
         let profile = try await Profile.named(name)
-        return Set(try await devices(forProfile: profile))
+        return try await devices(forProfile: profile)
     }
 }

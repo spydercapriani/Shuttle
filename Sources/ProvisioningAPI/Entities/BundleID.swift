@@ -237,3 +237,19 @@ public struct BundleID: Codable, Identifiable {
 		self.links = links
 	}
 }
+
+// MARK: - Equatable
+extension BundleID: Equatable {
+    
+    public static func == (lhs: BundleID, rhs: BundleID) -> Bool {
+        lhs.id == rhs.id
+    }
+}
+
+// MARK: - Hashable
+extension BundleID: Hashable {
+    
+    public func hash(into hasher: inout Hasher) {
+        hasher.combine(id)
+    }
+}
