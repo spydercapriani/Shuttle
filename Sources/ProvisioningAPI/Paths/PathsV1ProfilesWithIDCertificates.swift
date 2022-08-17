@@ -17,7 +17,7 @@ extension AppStoreConnect.V1.Profiles.WithID {
 
 		public func get(
             certificateFields: [Certificate.Attributes.Field]? = nil,
-            limit: Int? = nil
+            limit: Int? = .maxResources
         ) -> Request<CertificatesResponse> {
 			Request(
                 method: "GET",

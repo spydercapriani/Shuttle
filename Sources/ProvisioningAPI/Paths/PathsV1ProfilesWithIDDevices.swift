@@ -17,7 +17,7 @@ extension AppStoreConnect.V1.Profiles.WithID {
 
 		public func get(
             deviceFields: [Device.Attributes.Field]? = nil,
-            limit: Int? = nil
+            limit: Int? = .maxResources
         ) -> Request<DevicesResponse> {
 			Request(
                 method: "GET",

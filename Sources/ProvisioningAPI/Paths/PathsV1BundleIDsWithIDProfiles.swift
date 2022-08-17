@@ -29,7 +29,7 @@ extension AppStoreConnect.V1.BundleIDs.WithID {
 
 		private func makeGetQuery(
             _ profileFields: [Profile.Attributes.Field]?,
-            _ limit: Int?
+            _ limit: Int? = .maxResources
         ) -> [(String, String?)] {
 			let encoder = URLQueryEncoder()
 			encoder.encode(profileFields, forKey: "fields[profiles]", explode: false)

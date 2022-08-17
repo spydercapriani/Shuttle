@@ -32,7 +32,9 @@ extension AppStoreConnect.V1.BundleIDs {
 			public var bundleIDCapabilityFields: [BundleIDCapability.Attributes.Field]?
 			public var profileFields: [Profile.Attributes.Field]?
 			public var appFields: [AppField]?
+            @ClampedOptional(to: maxResources)
 			public var bundleIDCapabilitiesLimit: Int?
+            @ClampedOptional(to: maxResources)
 			public var profilesLimit: Int?
             
             public enum Include: String, Codable, CaseIterable {

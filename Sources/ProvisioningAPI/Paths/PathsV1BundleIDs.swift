@@ -15,7 +15,7 @@ extension AppStoreConnect.V1 {
 		/// Path: `/v1/bundleIds`
 		public let path: String
 
-		public func get(parameters: GetParameters? = nil) -> Request<BundleIDsResponse> {
+        public func get(parameters: GetParameters? = .init()) -> Request<BundleIDsResponse> {
 			Request(
                 method: "GET",
                 url: path,
@@ -32,12 +32,15 @@ extension AppStoreConnect.V1 {
             public var filterID: [BundleID.ID]?
 			public var sort: Sort?
 			public var bundleIDFields: [BundleID.Attributes.Field]?
-			public var limit: Int?
+            @Clamped(to: maxResources)
+            public var limit: Int = .maxResources
 			public var include: [Include]?
 			public var bundleIDCapabilityFields: [BundleIDCapability.Attributes.Field]?
 			public var profileFields: [Profile.Attributes.Field]?
 			public var appFields: [AppField]?
+            @ClampedOptional(to: maxResources)
 			public var bundleIDCapabilitiesLimit: Int?
+            @ClampedOptional(to: maxResources)
 			public var profilesLimit: Int?
             
             public enum Include: String, Codable, CaseIterable {
@@ -67,7 +70,7 @@ extension AppStoreConnect.V1 {
                 filterID: [String]? = nil,
                 sort: Sort? = nil,
                 bundleIDFields: [BundleID.Attributes.Field]? = nil,
-                limit: Int? = nil,
+                limit: Int = .maxResources,
                 include: [Include]? = nil,
                 bundleIDCapabilityFields: [BundleIDCapability.Attributes.Field]? = nil,
                 profileFields: [Profile.Attributes.Field]? = nil,

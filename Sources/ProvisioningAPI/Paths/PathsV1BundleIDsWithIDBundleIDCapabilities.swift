@@ -29,7 +29,7 @@ extension AppStoreConnect.V1.BundleIDs.WithID {
 
 		private func makeGetQuery(
             _ bundleIDCapabilityFields: [BundleIDCapability.Attributes.Field]?,
-            _ limit: Int?
+            _ limit: Int? = .maxResources
         ) -> [(String, String?)] {
 			let encoder = URLQueryEncoder()
 			encoder.encode(bundleIDCapabilityFields, forKey: "fields[bundleIdCapabilities]", explode: false)

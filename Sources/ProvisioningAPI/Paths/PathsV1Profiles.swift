@@ -15,7 +15,7 @@ extension AppStoreConnect.V1 {
 		/// Path: `/v1/profiles`
 		public let path: String
 
-		public func get(parameters: GetParameters? = nil) -> Request<ProfilesResponse> {
+        public func get(parameters: GetParameters? = .init()) -> Request<ProfilesResponse> {
 			Request(
                 method: "GET",
                 url: path,
@@ -31,13 +31,16 @@ extension AppStoreConnect.V1 {
 			public var filterID: [String]?
 			public var sort: Sort?
             public var profileFields: [Profile.Attributes.Field]?
-			public var limit: Int?
-			public var include: [Include]?
+            @Clamped(to: maxResources)
+            public var limit: Int = .maxResources
+            public var include: [Include]?
 			public var certificateFields: [Certificate.Attributes.Field]?
 			public var deviceFields: [Device.Attributes.Field]?
 			public var bundleIDFields: [BundleID.Attributes.Field]?
+            @ClampedOptional(to: maxResources)
 			public var certificatesLimit: Int?
-			public var devicesLimit: Int?
+            @ClampedOptional(to: maxResources)
+            public var devicesLimit: Int?
 
 			public enum Sort: String, Codable, CaseIterable {
 				case id
@@ -63,7 +66,7 @@ extension AppStoreConnect.V1 {
                 filterID: [Profile.ID]? = nil,
                 sort: Sort? = nil,
                 profileFields: [Profile.Attributes.Field]? = nil,
-                limit: Int? = nil,
+                limit: Int = .maxResources,
                 include: [Include]? = nil,
                 certificateFields: [Certificate.Attributes.Field]? = nil,
                 deviceFields: [Device.Attributes.Field]? = nil,

@@ -15,7 +15,7 @@ extension AppStoreConnect.V1 {
 		/// Path: `/v1/certificates`
 		public let path: String
 
-		public func get(parameters: GetParameters? = nil) -> Request<CertificatesResponse> {
+        public func get(parameters: GetParameters? = .init()) -> Request<CertificatesResponse> {
 			Request(
                 method: "GET",
                 url: path,
@@ -31,7 +31,8 @@ extension AppStoreConnect.V1 {
 			public var filterID: [String]?
 			public var sort: Sort?
 			public var fieldsCertificates: [FieldsCertificates]?
-			public var limit: Int?
+            @Clamped(to: maxResources)
+            public var limit: Int = .maxResources
 
 			public enum Sort: String, Codable, CaseIterable {
 				case certificateType
@@ -62,7 +63,7 @@ extension AppStoreConnect.V1 {
                 filterID: [String]? = nil,
                 sort: Sort? = nil,
                 fieldsCertificates: [FieldsCertificates]? = nil,
-                limit: Int? = nil
+                limit: Int = .maxResources
             ) {
 				self.filterCertificateType = filterCertificateType
 				self.filterDisplayName = filterDisplayName

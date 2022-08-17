@@ -15,7 +15,7 @@ extension AppStoreConnect.V1 {
 		/// Path: `/v1/devices`
 		public let path: String
 
-		public func get(parameters: GetParameters? = nil) -> Request<DevicesResponse> {
+        public func get(parameters: GetParameters? = .init()) -> Request<DevicesResponse> {
 			Request(
                 method: "GET",
                 url: path,
@@ -25,14 +25,15 @@ extension AppStoreConnect.V1 {
 		}
 
 		public struct GetParameters {
-            public var filterName: [Device.Name]?
-			public var filterPlatform: [BundleIDPlatform]?
-			public var filterStatus: [Device.Status]?
-            public var filterUdid: [Device.Identifier]?
-            public var filterID: [Device.ID]?
-			public var sort: Sort?
-			public var deviceFields: [Device.Attributes.Field]?
-			public var limit: Int?
+            public let filterName: [Device.Name]?
+			public let filterPlatform: [BundleIDPlatform]?
+			public let filterStatus: [Device.Status]?
+            public let filterUdid: [Device.Identifier]?
+            public let filterID: [Device.ID]?
+			public let sort: Sort?
+			public let deviceFields: [Device.Attributes.Field]?
+            @Clamped(to: maxResources)
+            private(set) var limit: Int = .maxResources
 
 			public enum Sort: String, Codable, CaseIterable {
 				case id
@@ -55,7 +56,7 @@ extension AppStoreConnect.V1 {
                 filterID: [Device.ID]? = nil,
                 sort: Sort? = nil,
                 deviceFields: [Device.Attributes.Field]? = nil,
-                limit: Int? = nil
+                limit: Int = .maxResources
             ) {
 				self.filterName = filterName
 				self.filterPlatform = filterPlatform
