@@ -1,8 +1,6 @@
 //
-//  ProfileDevice.swift
-//  
-//
-//  Created by Danny Gilbert on 8/15/22.
+//  ListDevices.swift
+//  ProvisioningTools
 //
 
 import Foundation
@@ -10,22 +8,15 @@ import ConsoleKit
 import Shuttle
 import ProvisioningAPI
 
-struct ProfileDevice: AsyncCommand {
+struct ListDevices: AsyncCommand {
     
     struct Signature: CommandSignature {
         @Option(
-            name: "deviceId",
-            short: "d",
-            help: "Search by Device UDID"
+            name: "profile",
+            short: "p",
+            help: "Name of Provisioning Profile to check for enrolled device. <If none given, looks for all registered devices>"
         )
-        var deviceUDID: String?
-        
-        @Option(
-            name: "deviceName",
-            short: "n",
-            help: "Search by Device Name"
-        )
-        var deviceName: String?
+        var profileName: String?
         
         @Option(
             name: "issuerId",
@@ -50,7 +41,7 @@ struct ProfileDevice: AsyncCommand {
         var key: String?
     }
     
-    let help = "Checks which profiles device is assigned to"
+    let help = "Checks on device enrollment status."
     
     func run(using context: CommandContext, signature: Signature) async throws {
         guard let issuerId = signature.issuerId else {
@@ -70,32 +61,17 @@ struct ProfileDevice: AsyncCommand {
         )
         AppStoreConnect.client = AppStoreConnectClient(provider)
         
-        let device: Device
-        if let udid = signature.deviceUDID {
-            device = try await .udid(udid)
-        } else if let name = signature.deviceName {
-            device = try await .named(name)
+        let devices: Set<Device>
+        if let profileName = signature.profileName {
+            let profile = try await Profile.named(profileName)
+            devices = try await .devices(forProfile: profile)
         } else {
-            let choice = context.console.choose("Search for device by:", from: ["name", "udid"])
-            switch choice {
-            case "name":
-                let name = context.console.ask("Device Name:")
-                device = try await .named(name)
-            case "udid":
-                let udid = context.console.ask("Device UDID:")
-                device = try await .udid(udid)
-            default:
-                throw CommandError.missingCommand
-            }
+            devices = try await .all
         }
         
-        let profiles: Set<Profile> = try await .profiles(forDeviceID: device.id)
-        context.console.print("Device Info:")
-        try Devices.printInfo(for: device, using: context)
-        context.console.info("Profiles:", newLine: true)
-        profiles.forEach { profile in
-            context.console.info("* \(profile.name)")
+        try devices.forEach { device in
+            try Devices.printInfo(for: device, using: context)
         }
+        context.console.info("Found \(devices.count) devices.")
     }
 }
-
