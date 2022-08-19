@@ -199,6 +199,12 @@ public extension Profile {
             forProfile: self
         )
     }
+    
+    var refresh: Profile {
+        get async throws {
+            try await Profile.update(forProfile: self)
+        }
+    }
 }
 
 // MARK: Profile - Devices - Enroll
