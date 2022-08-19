@@ -104,3 +104,58 @@ public extension Sequence {
         }
     }
 }
+
+// MARK: - Async FlatMap
+public extension Sequence {
+    
+    func asyncFlatMap<Result: Sequence>(
+        _ transform: (Element) async throws -> Result
+    ) async rethrows -> [Result.Element] {
+        var result: [Result.Element] = []
+        try await self.asyncForEach {
+            let element = try await transform($0)
+            result.append(contentsOf: element)
+        }
+        return result
+    }
+    
+    func asyncConcurrentFlatMap<Result: Sequence>(
+        _ transform: @escaping (Element) async throws -> Result
+    ) async rethrows -> [Result.Element] {
+        let tasks = map { element in
+            Task {
+                try await transform(element)
+            }
+        }
+        
+        return try await tasks.asyncFlatMap { task in
+            try await task.value
+        }
+    }
+}
+
+// MARK: - Async Reduce
+public extension Sequence {
+    
+    func asyncReduce<Result>(
+        into initialResult: Result,
+        _ transform: (_ partialResult: inout Result, Element) async throws -> ()
+    ) async rethrows -> Result {
+        var result = initialResult
+        try await self.asyncForEach {
+            try await transform(&result, $0)
+        }
+        return result
+    }
+    
+    func asyncReduce<Result>(
+        _ initialResult: Result,
+        _ nextPartialResult: (_ partialResult: Result, Element) async throws -> Result
+    ) async rethrows -> Result {
+        var result = initialResult
+        try await self.asyncForEach {
+            result = try await nextPartialResult(result, $0)
+        }
+        return result
+    }
+}

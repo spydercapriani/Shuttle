@@ -14,6 +14,7 @@ public struct Devices: AsyncCommandGroup {
         "enroll": EnrollDevice(),
         "update": UpdateDevice(),
         "search": SearchDevices(),
+        "disable": DisableDevices(),
     ]
     
     public let help = "Assists with App Store Connect Devices"
