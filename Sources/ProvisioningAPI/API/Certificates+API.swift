@@ -43,7 +43,7 @@ public extension Certificate {
     func download() async throws -> URL {
         try await AppStoreConnect.v1
             .certificates.id(self.id)
-            .get().download(using: AppStoreConnect.client.wrappedValue)
+            .get().download(using: AppStoreConnect.client)
             .value
     }
 }

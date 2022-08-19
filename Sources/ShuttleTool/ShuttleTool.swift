@@ -27,11 +27,11 @@ struct ShuttleTool: AsyncCommandGroup {
     }
     
     init(_ token: AppleJWT) {
-        AppStoreConnect.client = AppStoreConnectClient(token)
+        AppStoreConnect.token = token
     }
     
     static func main() async throws {
-        let provider: AppleJWT = {
+        let token: AppleJWT = {
             if
                 let issuerID = ProcessInfo.processInfo.environment["issuer_id"],
                 let keyID = ProcessInfo.processInfo.environment["key_id"],
@@ -49,8 +49,8 @@ struct ShuttleTool: AsyncCommandGroup {
         
         let console: Console = Terminal()
         let input = CommandInput(arguments: CommandLine.arguments)
-        let group = ShuttleTool(provider)
-        console.info("Using Key \(provider.keyID)")
+        let group = ShuttleTool(token)
+        console.info("Using Key \(token.keyID)")
         try await console.run(group, input: input)
     }
     

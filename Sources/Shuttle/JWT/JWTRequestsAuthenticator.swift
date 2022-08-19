@@ -18,7 +18,7 @@ public final class JWTRequestsAuthenticator {
                 let validToken = cached_token,
                 try !validToken.isExpired
             else {
-                let newToken = try provider.token
+                let newToken = try provider.value
                 cached_token = newToken
                 return newToken
             }

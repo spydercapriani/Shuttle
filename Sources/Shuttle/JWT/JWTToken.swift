@@ -7,7 +7,7 @@ import Foundation
 
 public protocol JWTToken {
     
-    var token: Token { get throws }
+    var value: Token { get throws }
 }
 
 public struct AppleJWT: Codable, JWTToken {
@@ -97,7 +97,7 @@ public struct AppleJWT: Codable, JWTToken {
     }
     
     /// Signed JWT token for App Store Connect requests.
-    public var token: Token {
+    public var value: Token {
         get throws {
             try signedToken(using: privateKey)
         }

@@ -8,19 +8,26 @@ import URLQueryEncoder
 @propertyWrapper
 public struct AppStoreConnectClient {
     
-    public let provider: AppleJWT
     public var wrappedValue: APIClient
     
-    public init(_ provider: AppleJWT) {
-        self.provider = provider
-        self.wrappedValue = APIClient(token: provider)
+    public init(_ token: AppleJWT) {
+        self.wrappedValue = APIClient(token: token)
     }
 }
 
 public enum AppStoreConnect {
     
+    public static var token: AppleJWT! {
+        didSet {
+            Self.client = APIClient(token: token)
+        }
+    }
+    
     /// Default API Client to be used for all App Store Connect API requests.
-    public static var client: AppStoreConnectClient!
+    @AppStoreConnectClient(
+        Self.token
+    )
+    public static var client: APIClient
 }
 
 public extension APIClient {
@@ -28,13 +35,13 @@ public extension APIClient {
     convenience init(
         baseURL: URL?,
         sessionConfiguration: URLSessionConfiguration = .default,
-        provider: JWTToken
+        token: JWTToken
     ) {
         self.init(
             configuration: .init(
                 baseURL: baseURL,
                 sessionConfiguration: sessionConfiguration,
-                delegate: JWTRequestsAuthenticator(provider)
+                delegate: JWTRequestsAuthenticator(token)
             )
         )
     }
@@ -44,7 +51,7 @@ public extension APIClient {
     ) {
         self.init(
             baseURL: URL(string: "https://api.appstoreconnect.apple.com"),
-            provider: token
+            token: token
         )
         
         let formatter = DateFormatter()
@@ -82,7 +89,7 @@ public extension Request {
     
     var location: URL {
         get async throws {
-            try await download(using: AppStoreConnect.client.wrappedValue)
+            try await download(using: AppStoreConnect.client)
                 .location
         }
     }
@@ -96,7 +103,7 @@ public extension Request where Response: Decodable {
     
     var response: Get.Response<Response> {
         get async throws {
-            try await send(using: AppStoreConnect.client.wrappedValue)
+            try await send(using: AppStoreConnect.client)
         }
     }
     
@@ -115,7 +122,7 @@ public extension Request where Response == Void {
     
     var response: Get.Response<Void> {
         get async throws {
-            try await send(using: AppStoreConnect.client.wrappedValue)
+            try await send(using: AppStoreConnect.client)
         }
     }
     
@@ -130,7 +137,7 @@ public extension Request where Response == URL {
     
     var response: Get.Response<URL> {
         get async throws {
-            try await download(using: AppStoreConnect.client.wrappedValue)
+            try await download(using: AppStoreConnect.client)
         }
     }
 }

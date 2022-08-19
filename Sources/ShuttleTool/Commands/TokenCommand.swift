@@ -15,7 +15,7 @@ struct TokenCommand: AsyncCommand {
     let help = "This command helps generate Apple JWT tokens."
     
     func run(using context: CommandContext, signature: Signature) async throws {
-        let token = try AppStoreConnect.client.provider.token
+        let token = try AppStoreConnect.token.value
         
         if context.console.confirm("Would you like to copy your token to the clipboard?") {
             copyToClipboard(token)
