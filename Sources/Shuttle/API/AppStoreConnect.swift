@@ -8,9 +8,11 @@ import URLQueryEncoder
 @propertyWrapper
 public struct AppStoreConnectClient {
     
+    public let provider: AppleJWT
     public var wrappedValue: APIClient
     
     public init(_ provider: AppleJWT) {
+        self.provider = provider
         self.wrappedValue = APIClient(token: provider)
     }
 }

@@ -12,5 +12,5 @@ public struct Profiles: AsyncCommandGroup {
         :
     ]
     
-    public let help = "Assists with App Store Connect Profiles"
+    public let help = "Tools for dealing with App Store Connect Profiles"
 }

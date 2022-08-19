@@ -26,50 +26,11 @@ struct SearchDevice: AsyncCommand {
             help: "Search by Device Name"
         )
         var deviceName: String?
-        
-        @Option(
-            name: "issuerId",
-            short: "i",
-            help: "App Store Connect API Issuer Id"
-        )
-        var issuerId: String?
-        
-        @Option(
-            name: "keyId",
-            short: "k",
-            help: "App Store Connect API Key Id"
-        )
-        var keyId: String?
-        
-        @Option(
-            name: "key",
-            short: "f",
-            help: "Location of App Store Connect API Key.p8 file",
-            completion: .files(withExtensions: ["p8"])
-        )
-        var key: String?
     }
     
     let help = "Checks which profiles device is assigned to"
     
     func run(using context: CommandContext, signature: Signature) async throws {
-        guard let issuerId = signature.issuerId else {
-            throw CommandError.missingRequiredArgument("--issuerId <appStoreConnect_issuer_id>")
-        }
-        guard let keyId = signature.keyId else {
-            throw CommandError.missingRequiredArgument("--keyId <appStoreConnect_key_id>")
-        }
-        guard let path = signature.key else {
-            throw CommandError.missingRequiredArgument("--key <AppStoreConnect.p8_key_file>")
-        }
-        let key = URL(fileURLWithPath: path)
-        let provider = try AppleTokenProvider(
-            issuerId: issuerId,
-            keyId: keyId,
-            key: key
-        )
-        AppStoreConnect.client = AppStoreConnectClient(provider)
-        
         let device: Device
         if let udid = signature.deviceUDID {
             device = try await .udid(udid)
@@ -91,7 +52,7 @@ struct SearchDevice: AsyncCommand {
         
         let profiles: Set<Profile> = try await .profiles(forDeviceID: device.id)
         context.console.print("Device Info:")
-        try Devices.printInfo(for: device, using: context)
+        try printInfo(for: device, using: context)
         context.console.info("Profiles:", newLine: true)
         profiles.forEach { profile in
             context.console.info("* \(profile.name)")

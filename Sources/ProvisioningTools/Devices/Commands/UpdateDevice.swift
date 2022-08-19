@@ -30,43 +30,11 @@ struct UpdateDevice: AsyncCommand {
             help: "Disable the device"
         )
         var disable: Bool
-        
-        @Option(name: "issuerId", short: "i", help: "Issuer Id")
-        var issuerId: String?
-        
-        @Option(name: "keyId", short: "k", help: "Key Id")
-        var keyId: String?
-        
-        @Option(name: "key", short: "f", help: "Location of key", completion: CompletionAction.files())
-        var key: String?
     }
     
     let help = "This command helps register devices to the developers portal."
     
     func run(using context: CommandContext, signature: Signature) async throws {
-        guard
-            let issuerId = signature.issuerId
-        else {
-            throw CommandError.missingRequiredArgument("--issuerId <appStoreConnect_issuer_id>")
-        }
-        guard
-            let keyId = signature.keyId
-        else {
-            throw CommandError.missingRequiredArgument("--keyId <appStoreConnect_key_id>")
-        }
-        guard
-            let path = signature.key
-        else {
-            throw CommandError.missingRequiredArgument("--key <AppStoreConnect.p8_key_file>")
-        }
-        let key = URL(fileURLWithPath: path)
-        let provider = try AppleTokenProvider(
-            issuerId: issuerId,
-            keyId: keyId,
-            key: key
-        )
-        AppStoreConnect.client = AppStoreConnectClient(provider)
-        
         let deviceName = signature.deviceName
         let deviceUDID = signature.deviceUDID ?? context.console.ask("Device UDID:")
         
@@ -96,7 +64,7 @@ struct UpdateDevice: AsyncCommand {
             )
             context.console.success("Successfully registered \(existingDevice.name)")
         }
-        try Devices.printInfo(for: existingDevice, using: context)
+        try printInfo(for: existingDevice, using: context)
         
         guard signature.disable else { return }
         try await Self.refreshInvalidProfiles(

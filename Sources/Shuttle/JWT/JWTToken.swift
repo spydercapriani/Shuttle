@@ -62,10 +62,15 @@ public struct AppleJWT: Codable, JWTToken {
         let tokenType: String = "JWT"
     }
     /// The JWT Header contains information specific to the App Store Connect API Keys, such as algorithm and keys.
-    private let header: Header
+    private var header: Header {
+        .init(keyIdentifier: keyID)
+    }
 
     /// Your issuer identifier from the API Keys page in App Store Connect (Ex: 57246542-96fe-1a63-e053-0824d011072a)
-    private let issuerIdentifier: String
+    private let issuerID: String
+    
+    /// Your key identifier from the API Keys Page in App Store Connect (Ex: TJ52DN846H)
+    public let keyID: String
     
     /// Your private API key minus the key header/footer strings.
     private let privateKey: P8PrivateKey
@@ -80,13 +85,13 @@ public struct AppleJWT: Codable, JWTToken {
     ///   - issuerIdentifier: Your issuer identifier from the API Keys page in App Store Connect (Ex: 57246542-96fe-1a63-e053-0824d011072a)
     ///   - expireDuration: The token's expiration duration. Tokens that expire more than 20 minutes in the future are not valid, so set it to a max of 20 minutes.
     public init(
-        keyIdentifier: String,
-        issuerIdentifier: String,
+        issuerID: String,
+        keyID: String,
         privateKey: P8PrivateKey,
         expireDuration: TimeInterval = 60 * 20
     ) {
-        header = Header(keyIdentifier: keyIdentifier)
-        self.issuerIdentifier = issuerIdentifier
+        self.issuerID = issuerID
+        self.keyID = keyID
         self.privateKey = privateKey
         self.expireDuration = expireDuration
     }
@@ -120,7 +125,7 @@ public struct AppleJWT: Codable, JWTToken {
     /// Combine the header and the payload as a digest for signing.
     private func digest(dateProvider: DateProvider) throws -> String {
         let payload = Payload(
-            issuerIdentifier: issuerIdentifier,
+            issuerIdentifier: issuerID,
             expirationTime: dateProvider().addingTimeInterval(expireDuration).timeIntervalSince1970
         )
         let headerString = try JSONEncoder()
@@ -146,6 +151,23 @@ public struct AppleJWT: Codable, JWTToken {
             .es256Sign(digest: digest)
 
         return "\(digest).\(signature)"
+    }
+    
+    public static func privateKey(from file: URL) throws -> P8PrivateKey {
+        var privateKey = try String(contentsOf: file)
+        
+        // remove the header string
+        let offset = String("-----BEGIN PRIVATE KEY-----").count
+        let index = privateKey.index(privateKey.startIndex, offsetBy: offset+1)
+        privateKey = String(privateKey.suffix(from: index))
+        // remove end of line chars
+        privateKey = privateKey.replacingOccurrences(of: "\n", with: "")
+        // remove the tail string
+        let tailWord = "-----END PRIVATE KEY-----"
+        if let lowerBound = privateKey.range(of: tailWord)?.lowerBound {
+            privateKey = String(privateKey.prefix(upTo: lowerBound))
+        }
+        return privateKey
     }
 }
 
@@ -191,34 +213,4 @@ private extension P8PrivateKey {
             return asn1
         }
     }
-}
-
-public func AppleTokenProvider(
-    issuerId: String,
-    keyId: String,
-    key: URL
-) throws -> AppleJWT {
-    let privateKey = try privateKey(from: key)
-    return AppleJWT(
-        keyIdentifier: keyId,
-        issuerIdentifier: issuerId,
-        privateKey: privateKey
-    )
-}
-
-private func privateKey(from file: URL) throws -> String {
-    var privateKey = try String(contentsOf: file)
-    
-    // remove the header string
-    let offset = String("-----BEGIN PRIVATE KEY-----").count
-    let index = privateKey.index(privateKey.startIndex, offsetBy: offset+1)
-    privateKey = String(privateKey.suffix(from: index))
-    // remove end of line chars
-    privateKey = privateKey.replacingOccurrences(of: "\n", with: "")
-    // remove the tail string
-    let tailWord = "-----END PRIVATE KEY-----"
-    if let lowerBound = privateKey.range(of: tailWord)?.lowerBound {
-        privateKey = String(privateKey.prefix(upTo: lowerBound))
-    }
-    return privateKey
 }

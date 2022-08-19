@@ -38,7 +38,7 @@ public extension Sequence {
     
     func concurrentMap<T>(
         _ transform: @escaping (Element) async throws -> T
-    ) async throws -> [T] {
+    ) async rethrows -> [T] {
         let tasks = map { element in
             Task {
                 try await transform(element)
@@ -92,7 +92,7 @@ public extension Sequence {
     
     func concurrentCompactMap<T>(
         _ transform: @escaping (Element) async throws -> T?
-    ) async throws -> [T] {
+    ) async rethrows -> [T] {
         let tasks = map { element in
             Task {
                 try await transform(element)

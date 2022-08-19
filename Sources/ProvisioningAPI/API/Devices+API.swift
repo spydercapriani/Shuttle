@@ -122,36 +122,6 @@ public extension Device {
     }
 }
 
-// MARK: - Devices - By Platform
-public extension Set where Element == Device {
-
-    static func devices(
-        forPlatform platform: BundleIDPlatform...
-    ) async throws -> Set<Device> {
-        try await AppStoreConnect.v1
-            .devices.get(parameters: .init(
-                filterPlatform: platform
-            ))
-            .value.all
-            .uniques
-    }
-}
-
-public extension Array where Element == Device {
-    
-    static func devices(
-        forPlatform platform: BundleIDPlatform...,
-        sortedBy: AppStoreConnect.V1.Devices.GetParameters.Sort? = nil
-    ) async throws -> [Device] {
-        try await AppStoreConnect.v1
-            .devices.get(parameters: .init(
-                filterPlatform: platform,
-                sort: sortedBy
-            ))
-            .value.all
-    }
-}
-
 // MARK: Devices - All - Set
 public extension Set where Element == Device {
     
@@ -227,5 +197,35 @@ public extension Set where Element == Device {
     static func devices(forName name: Profile.Name) async throws -> Set<Device> {
         let profile = try await Profile.named(name)
         return try await devices(forProfile: profile)
+    }
+}
+
+// MARK: - Devices - By Platform
+public extension Set where Element == Device {
+
+    static func devices(
+        forPlatform platform: BundleIDPlatform...
+    ) async throws -> Set<Device> {
+        try await AppStoreConnect.v1
+            .devices.get(parameters: .init(
+                filterPlatform: platform
+            ))
+            .value.all
+            .uniques
+    }
+}
+
+public extension Array where Element == Device {
+    
+    static func devices(
+        forPlatform platform: BundleIDPlatform...,
+        sortedBy: AppStoreConnect.V1.Devices.GetParameters.Sort? = nil
+    ) async throws -> [Device] {
+        try await AppStoreConnect.v1
+            .devices.get(parameters: .init(
+                filterPlatform: platform,
+                sort: sortedBy
+            ))
+            .value.all
     }
 }

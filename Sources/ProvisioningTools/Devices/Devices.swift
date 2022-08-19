@@ -18,14 +18,14 @@ public struct Devices: AsyncCommandGroup {
     ]
     
     public let help = "Assists with App Store Connect Devices"
-    
-    static func printInfo(
-        for device: Device,
-        using context: CommandContext
-    ) throws {
-        guard
-            let attributes = device.attributes
-        else { return }
-        context.console.info(try attributes.prettyPrinted)
-    }
+}
+
+func printInfo(
+    for device: Device,
+    using context: CommandContext
+) throws {
+    guard
+        let attributes = device.attributes
+    else { return }
+    context.console.info(try attributes.prettyPrinted)
 }
