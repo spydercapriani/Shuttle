@@ -18,6 +18,15 @@ public struct Device: Codable, Identifiable {
         case enabled = "ENABLED"
         case disabled = "DISABLED"
     }
+    
+    public enum DeviceClass: String, Codable, CaseIterable {
+        case appleWatch = "APPLE_WATCH"
+        case ipad = "IPAD"
+        case iphone = "IPHONE"
+        case ipod = "IPOD"
+        case appleTv = "APPLE_TV"
+        case mac = "MAC"
+    }
 
 	public struct Attributes: Codable {
 		public var name: String?
@@ -27,15 +36,6 @@ public struct Device: Codable, Identifiable {
 		public var status: Status?
 		public var model: String?
 		public var addedDate: Date?
-
-		public enum DeviceClass: String, Codable, CaseIterable {
-			case appleWatch = "APPLE_WATCH"
-			case ipad = "IPAD"
-			case iphone = "IPHONE"
-			case ipod = "IPOD"
-			case appleTv = "APPLE_TV"
-			case mac = "MAC"
-		}
         
         public enum Field: String, Codable, CaseIterable {
             case addedDate

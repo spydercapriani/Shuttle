@@ -25,8 +25,11 @@ public extension Encodable {
     
     var prettyPrinted: String {
         get throws {
+            let dateFormatter = DateFormatter()
+            dateFormatter.dateFormat = "MMM d,yyyy @ h:mm a"
             let encoder = JSONEncoder()
             encoder.outputFormatting = .prettyPrinted
+            encoder.dateEncodingStrategy = .formatted(dateFormatter)
             let data = try encoder.encode(self)
             return String(data: data, encoding: .utf8)!
         }

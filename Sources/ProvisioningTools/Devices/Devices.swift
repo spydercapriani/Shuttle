@@ -13,8 +13,7 @@ public struct Devices: AsyncCommandGroup {
         "register": RegisterDevice(),
         "enroll": EnrollDevice(),
         "update": UpdateDevice(),
-        "list": ListDevices(),
-        "search": SearchDevice(),
+        "search": SearchDevices(),
     ]
     
     public let help = "Assists with App Store Connect Devices"
